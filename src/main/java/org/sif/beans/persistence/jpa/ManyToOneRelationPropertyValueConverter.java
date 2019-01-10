@@ -1,8 +1,5 @@
 package org.sif.beans.persistence.jpa;
 
-import static org.sif.beans.Classes.classFor;
-import static org.sif.beans.Classes.getFieldClass;
-
 import javax.inject.Inject;
 import javax.persistence.ManyToOne;
 
@@ -11,6 +8,10 @@ import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import static org.sif.beans.Classes.classFor;
+import static org.sif.beans.Classes.getFieldClass;
+
 /**
  * Converts values to expected primary key values for ManyToOne relations.
  * 

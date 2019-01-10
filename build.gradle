@@ -17,6 +17,11 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+configurations.all {
+	resolutionStrategy.cacheDynamicVersionsFor 100, 'hours'
+	resolutionStrategy.cacheChangingModulesFor 100, 'hours'
+}
+
 publishing {
     repositories {
         ivy {

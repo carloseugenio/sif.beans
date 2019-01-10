@@ -2,6 +2,8 @@ package org.sif.beans;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +116,7 @@ public final class AnnotationUtil {
 	 */
 	public static <T extends Annotation> Annotation getAnnotationForField(Class<?> bean, String fieldName,
 			Class<T> annotationClass) {
-		log.trace("Finding field [" + fieldName + "] in bean class [" + bean.getSimpleName() + "]");
+		log.debug("Finding field [" + fieldName + "] in bean class [" + bean.getSimpleName() + "]");
 		Field field = getField(bean, fieldName);
 		if (field == null) {
 			throw new IllegalArgumentException(
@@ -123,10 +125,59 @@ public final class AnnotationUtil {
 		return field.getAnnotation(annotationClass);
 	}
 
-	private static Field getField(Class<?> bean, String fieldName) {
+	/**
+	 * Returns the field in the target bean. This method will recurse to supper
+	 * classes.
+	 */
+	private static Field getField(Class<?> beanClass, String fieldName) {
+		if (isNested(fieldName)) {
+			String lastPart = fieldName.substring(fieldName.indexOf(".") + 1);
+			log.trace("This is a nested field. Recursing for lastPart: " + lastPart);
+			String firstPart = fieldName.substring(0, fieldName.indexOf("."));
+			log.trace("Getting type for first part property [" + firstPart + "]");
+			Class<?> firstType = getFieldClass(beanClass, firstPart);
+			log.trace("FirstType class: [" + firstType + "]");
+			return getField(firstType, lastPart);
+		}
+		Field field = FieldUtils.getField(beanClass, fieldName, true);
+		if (field != null) {
+			return field;
+		} else {
+			throw new IllegalArgumentException("Field [" + fieldName + "] not found in [" + beanClass + "]");
+		}
+	}
+
+	/**
+	 * Returns the type of a field in the target bean class. This method will
+	 * recurse to supper classes.
+	 */
+	public static Class<?> getFieldClass(Class<?> beanClass, String fieldName) {
+		Field field = getField(beanClass, fieldName);
+		if (field != null) {
+			return field.getType();
+		} else {
+			throw new IllegalArgumentException("Field [" + fieldName + "] not found in [" + beanClass + "]");
+		}
+	}
+
+	/**
+	 * Inidica se a propriedade em questao e do tipo nested (ex. filho.nome)
+	 *
+	 * @param property
+	 *            nome da propriedade a ser verificada
+	 * @return true se a propriedade e do tipo nested.
+	 */
+	public static boolean isNested(String property) {
+		if (StringUtils.trimToNull(property) == null) {
+			return false;
+		}
+		return property.indexOf(".") != -1;
+	}
+	private static Field _getField(Class<?> bean, String fieldName) {
 		try {
 			return bean.getField(fieldName);
-		} catch (NoSuchFieldException e) {
+		} catch (NoSuchFieldException ex) {
+			log.debug("Find field [" + fieldName + "] on bean: [" + bean + "] threw exception: " + ex);
 			return null;
 		}
 	}
@@ -375,7 +426,8 @@ public final class AnnotationUtil {
 			Annotation annotation = AnnotationUtil.getAnnotationForField(bean, fieldName, annotationClass);
 			return annotation != null;
 		} catch (Exception ex) {
-			getLog().warn("Exception getting annotation for field: [" + fieldName + "]: " + ex);
+			getLog().warn("Exception getting annotation [" + annotationClass + "] for field: ["
+					+ fieldName + "] on bean [" + bean + "]: " + ex);
 		}
 		return false;
 	}

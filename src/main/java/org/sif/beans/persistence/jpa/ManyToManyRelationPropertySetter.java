@@ -1,14 +1,5 @@
 package org.sif.beans.persistence.jpa;
 
-import static org.sif.beans.Classes.classFor;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.sif.beans.AnnotationUtil;
 import org.sif.beans.CollectionUtil;
@@ -16,6 +7,15 @@ import org.sif.beans.PropertyValueConverterFactory;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import java.util.Collection;
+import java.util.List;
+
+import static org.sif.beans.Classes.classFor;
+
 /**
  * Property setter capable of setting ManyToMany relation properties on the
  * target bean. The values passed to this implementation are primary keys in the
@@ -80,8 +80,6 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 		// the main bean). The facade will be later used to retrieve elements
 		// from persistence storage.
 		relationFacade.setBeanClass(relationBeanClass);
-		log.debug("BeanFacade for [" + relationBeanClass.getSimpleName()
-				+ "] found. Delegating to DAO: " + relationFacade.getDelegateClass());
 		log.debug("Getting property [" + property + "] on bean [" + bean + "]");
 		// The collection field value. This is the current collection values
 		Object fieldValue = PropertyUtils.getProperty(bean, property);
@@ -148,8 +146,6 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 		// the main bean). The facade will be later used to retrieve elements
 		// from persistence storage.
 		relationFacade.setBeanClass(relationBeanClass);
-		log.debug("BeanFacade for [" + relationBeanClass.getSimpleName()
-				+ "] found. Delegating to DAO: " + relationFacade.getDelegateClass());
 		log.debug("Getting property [" + property + "] on bean [" + bean + "]");
 		// The collection field value. This is the current collection values
 		Object fieldValue = PropertyUtils.getProperty(bean, property);

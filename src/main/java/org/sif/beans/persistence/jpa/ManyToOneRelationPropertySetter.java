@@ -1,8 +1,5 @@
 package org.sif.beans.persistence.jpa;
 
-import static org.sif.beans.Classes.classFor;
-import static org.sif.beans.Classes.getFieldClass;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -14,6 +11,10 @@ import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import static org.sif.beans.Classes.classFor;
+import static org.sif.beans.Classes.getFieldClass;
+
 /**
  * Property setter capable of setting ManyToOne relation properties on the
  * target bean provided the relation primary key. If the property to set is not
