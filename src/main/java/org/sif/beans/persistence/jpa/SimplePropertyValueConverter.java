@@ -1,14 +1,15 @@
-package org.sif.beans;
+package org.sif.beans.persistence.jpa;
+
+import org.sif.beans.PropertyValueConverter;
+import org.sif.beans.PropertyValueConverterUtil;
+import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.persistence.Basic;
-
-import org.sif.core.persistence.Concrete;
-import org.slf4j.Logger;
+import javax.inject.Named;
 
 import static org.sif.beans.Classes.getFieldClass;
 
-@Concrete(delegate = Basic.class)
+@Named("BasicPropertyValueConverter")
 public class SimplePropertyValueConverter<T> implements
 		PropertyValueConverter<T> {
 

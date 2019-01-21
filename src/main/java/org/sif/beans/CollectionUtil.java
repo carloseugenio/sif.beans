@@ -1,30 +1,59 @@
 package org.sif.beans;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Named;
+
 /**
  * Contains utility methods for handling collection of values
  * 
  * @author Carlos Eugenio P. da Purificacao
  * 
  */
+@SuppressWarnings("unused")
+@Named
 public class CollectionUtil {
+
+	Logger log = LoggerFactory.getLogger(CollectionUtil.class);
+
+	/**
+	 * If the given object is a collection, returns the first element on the collection, if there is
+	 * one, or else return the object itself
+	 */
+	public Object getFirstCollectionElement(final Object collectionObject) {
+		log.debug("Getting first element for: " + collectionObject);
+		if (!isCollection(collectionObject)) {
+			log.debug("Element is not a collection!");
+			return collectionObject;
+		}
+		if (isArrayCollection(collectionObject)) {
+			Object[] objects = ((Object[])collectionObject);
+			if (objects.length > 0) {
+				return objects[0];
+			}
+		}
+		if (isRawCollection(collectionObject)) {
+			Collection collection = ((Collection) collectionObject);
+			if (!collection.isEmpty()) {
+				return collection.iterator().next();
+			}
+		}
+		return collectionObject;
+	}
 
 	/**
 	 * Returns whether the provided value is a subclass of Collection
 	 */
 	public boolean isRawCollection(Object value) {
-		if (Collection.class.isAssignableFrom(value.getClass())) {
+		if (value != null && Collection.class.isAssignableFrom(value.getClass())) {
 			return true;
 		}
 		return false;
@@ -42,7 +71,7 @@ public class CollectionUtil {
 
 	/**
 	 * Returns whether the provided value is a String representing a comma
-	 * separated values of elements.
+	 * separated values of Number elements.
 	 */
 	public boolean isStringCommaSeparatedNumberArray(Object value) {
 		String[] splitArray = StringUtils.split(String.valueOf(value), ',');
@@ -53,6 +82,18 @@ public class CollectionUtil {
 			if (isNotNumber(StringUtils.trim(item))) {
 				return false;
 			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns whether the provided value is a String representing a comma
+	 * separated values of any type of elements.
+	 */
+	public boolean isStringCommaSeparatedArray(Object value) {
+		String[] splitArray = StringUtils.split(String.valueOf(value), ',');
+		if (isEmptyOrOneElementArray(splitArray)) {
+			return false;
 		}
 		return true;
 	}
@@ -78,6 +119,18 @@ public class CollectionUtil {
 	}
 
 	/**
+	 * Returns true if this value is a collection. It will evaluate to true
+	 * collections, arrays and even comma separated values. This will be true
+	 * even if the elements are not numbers.
+	 */
+	public boolean isCollectionOfAnyType(Object value) {
+		return value != null
+				&& (this.isRawCollection(value)
+				|| this.isArrayCollection(value) || this
+				.isStringCommaSeparatedArray(value));
+	}
+
+	/**
 	 * Returns true if the value is null or if it is a collection and the
 	 * collection is empty.
 	 */
@@ -100,17 +153,20 @@ public class CollectionUtil {
 
 	private static Map<Class<?>, Class<?>> collectionImplentations;
 	static {
-		collectionImplentations = new HashMap<Class<?>, Class<?>>();
+		collectionImplentations = new HashMap<>();
 		collectionImplentations.put(Set.class, HashSet.class);
 		collectionImplentations.put(HashSet.class, HashSet.class);
 		collectionImplentations.put(List.class, ArrayList.class);
 		collectionImplentations.put(ArrayList.class, ArrayList.class);
 	}
 
-	public Collection<?> newCollection(Class<?> collectionType)
-			throws Exception {
-		return (Collection<?>) collectionImplentations.get(collectionType)
-				.newInstance();
+	public Collection<?> newCollection(Class<?> collectionType) {
+		try {
+			return (Collection<?>) collectionImplentations.get(collectionType)
+					.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

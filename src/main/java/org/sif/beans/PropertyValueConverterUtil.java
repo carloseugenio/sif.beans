@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,11 +24,30 @@ import static org.sif.beans.Classes.*;
  * @author Carlos Eugenio P. da Purificacao
  * 
  */
+@Named
 public class PropertyValueConverterUtil {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	CollectionUtil collectionUtil = new CollectionUtil();
+
+	/**
+	 * Converts the given value to the correct list type
+	 * @param listType the result list type
+	 * @param value the value to convert
+	 * @return as list of the given type with the given elements
+	 */
+	public List<?> asList(Class<?> listType, Object value) {
+		log.debug("Converting value ==" + value + "== of class: "
+				+ classFor(value).getSimpleName() + ", to a List of type: " + listType + " ...");
+		log.debug("Converting to List...");
+		// The given object is an array.
+		List<?> resultingList = (List<?>) valueListToCollection(value, List.class, listType);
+		log.debug("The resultingList class from Arrays.asList: "
+				+ classFor(resultingList).getSimpleName());
+		log.debug("The resulting list values: " + resultingList);
+		return resultingList;
+	}
 
 	/**
 	 * Tries to determine the correct type for an array of elements and return
@@ -36,11 +56,11 @@ public class PropertyValueConverterUtil {
 	 * was an array of primitive type, the final collection will contain
 	 * elements with the same type as the original array.
 	 */
-	Collection<?> asList(Object value) {
+	public List<?> asList(Object value) {
 		log.debug("Converting the array of class: "
 				+ classFor(value).getSimpleName() + " to a collection...");
 		if (Object[].class.isAssignableFrom(classFor(value))) {
-			Collection<?> resultingList = Arrays.asList((Object[]) value);
+			List<?> resultingList = Arrays.asList((Object[]) value);
 			log.debug("The resultingList class from Arrays.asList: "
 					+ classFor(resultingList).getSimpleName());
 			log.debug("The resulting list values: " + resultingList);
@@ -73,8 +93,7 @@ public class PropertyValueConverterUtil {
 	 * type.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Collection<?> convertAll(Class<?> elementType, Collection<?> values)
-			throws Exception {
+	private Collection<?> convertAll(Class<?> elementType, Collection<?> values) {
 		log.debug("Converting all values " + values + ", to type: "
 				+ elementType);
 		List convertedValues = new ArrayList();
@@ -91,18 +110,18 @@ public class PropertyValueConverterUtil {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Collection stringArrayToCollection(String value,
-			Class<? extends Collection> collectionType, Class<?> elementType)
-			throws Exception {
+			Class<? extends Collection> collectionType, Class<?> elementType) {
 		Collection collection = collectionUtil.newCollection(collectionType);
 		log.debug("Created new collection instance: "
 				+ classFor(collection).getSimpleName());
 		List<String> stringList = Arrays.asList(StringUtils.split(value, ","));
 		log.debug("Created a simple string list for the comma separated values: "
 				+ stringList);
-		for (String string : stringList) {
-			log.trace("Conventing the list element [" + string
+		for (String str : stringList) {
+			String trimmed = str.trim();
+			log.trace("Conventing the list element [" + trimmed
 					+ "] to the provided type [" + elementType.getSimpleName());
-			Object convertedElement = convert(elementType, string);
+			Object convertedElement = convert(elementType, trimmed);
 			log.trace("Converted element type: "
 					+ classFor(convertedElement).getSimpleName());
 			collection.add(convertedElement);
@@ -113,8 +132,7 @@ public class PropertyValueConverterUtil {
 	/**
 	 * Converts the value to a compatible type on the target bean and property.
 	 */
-	public Object convert(Class<?> beanClass, String beanProperty, Object value)
-			throws Exception {
+	public Object convert(Class<?> beanClass, String beanProperty, Object value) {
 		log.debug("Getting the type for property [" + beanProperty
 				+ "] of class [" + beanClass + "].");
 		Class<?> fieldType = getFieldClass(beanClass, beanProperty);
@@ -136,12 +154,12 @@ public class PropertyValueConverterUtil {
 	 *             if an error occurs in the conversion process.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object convert(Class<?> clazz, Object value) throws Exception {
+	public Object convert(Class<?> clazz, Object value) {
 		if (clazz == null) {
 			throw new IllegalArgumentException(
 					"The class to convert is null. Can't convert to a null type!");
 		}
-		log.debug("Trying to convert value [" + value + "] to target Class ["
+		log.debug("Trying to convert value ==" + value + "== of class: " + value.getClass() + ", to target Class ["
 				+ clazz + "]");
 		if (Collection.class.isAssignableFrom(clazz)) {
 			log.debug("This class [" + clazz.getSimpleName()
@@ -152,10 +170,19 @@ public class PropertyValueConverterUtil {
 		}
 		Object convertedValue = null;
 		if (value != null) {
-			// >>>>>>>>> Verify collection???
+			if (Collection.class.isAssignableFrom(value.getClass())) {
+				log.warn("The value is still a collection [" + value.getClass() + "], " +
+						"but the target is not: " + clazz);
+				log.warn("Attempting to get the first element...");
+				Collection colValue = (Collection) value;
+				if (!colValue.isEmpty()) {
+					value = colValue.iterator().next();
+					log.warn("Converted the collection element to: " + value);
+				}
+			}
 			log.debug("Converting [" + value + "] to [" + clazz + "]");
-			String propertyValue = value.toString();
-			convertedValue = ConvertUtils.convert(propertyValue, clazz);
+			//String stringValue = value.toString();
+			convertedValue = ConvertUtils.convert(value, clazz);
 			log.debug("Converted value: " + convertedValue);
 			if (convertedValue != null) {
 				log.debug("ConvertedType: " + classFor(convertedValue));
@@ -172,9 +199,8 @@ public class PropertyValueConverterUtil {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> Collection<?> valueListToCollection(Object value,
-			Class<? extends Collection> collectionType, Class<?> elementType)
-			throws Exception {
-		log.debug("The convertion from value [" + value
+			Class<? extends Collection> collectionType, Class<?> elementType) {
+		log.debug("The conversion from value [" + value
 				+ "] to the collection type [" + collectionType.getSimpleName()
 				+ "] will result in elements of type ["
 				+ elementType.getSimpleName() + "]");
@@ -190,7 +216,7 @@ public class PropertyValueConverterUtil {
 			Collection asList = asList(value);
 			log.debug("Created list from the array: " + asList);
 			elements.addAll(convertAll(elementType, asList));
-		} else if (collectionUtil.isStringCommaSeparatedNumberArray(value)) {
+		} else if (collectionUtil.isStringCommaSeparatedArray(value)) {
 			log.debug("This is a String Comma Separated Array: " + value);
 			Collection stringArrayAsTypeCollection = stringArrayToCollection(
 					value.toString(), collectionType, elementType);

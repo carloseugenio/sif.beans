@@ -2,6 +2,7 @@ package org.sif.beans.persistence.jpa;
 
 import org.sif.beans.AnnotationUtil;
 
+import javax.inject.Named;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -13,6 +14,7 @@ import javax.persistence.OneToMany;
  * @author Carlos Eugenio P. da Purificacao
  * 
  */
+@Named
 public class PropertyRelationUtil {
 
 	/**

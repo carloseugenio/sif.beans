@@ -1,16 +1,16 @@
 package org.sif.beans.persistence.jpa;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.persistence.ManyToOne;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.sif.beans.AnnotationUtil;
 import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverterUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.ManyToOne;
+import java.util.Collection;
+import java.util.List;
 
 import static org.sif.beans.Classes.classFor;
 import static org.sif.beans.Classes.getFieldClass;
@@ -27,7 +27,7 @@ import static org.sif.beans.Classes.getFieldClass;
  * @param <T>
  *            the target bean type.
  */
-@Concrete(delegate = ManyToOne.class)
+@Named("ManyToOneRelationPropertySetter")
 public class ManyToOneRelationPropertySetter<T, I> extends
 		AbstractJPAPropertySetter<T, I> {
 
@@ -46,11 +46,37 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(
 				classFor(bean), property, ManyToOne.class);
 		if (isManyToOne) {
+			log.debug("Setting many to one property [" + property + "] -> " + value);
+			if (value != null) {
+				log.debug("Value class: " + value.getClass());
+				if (String.class.isAssignableFrom(value.getClass())) {
+					log.debug("Value is String. Check if empty");
+					String stringValue = (String) value;
+					if (stringValue.isEmpty()) {
+						log.debug("The string is empty. Unsetting the property!");
+						return unsetProperty(bean, property, null);
+					}
+				}
+			}
 			// This converter can't handle collection of values since it will
 			// lookup a single bean to convert
 			if (collectionUtil.isCollection(value)) {
-				throw new IllegalArgumentException("The provided value ["
-						+ value + "] to convert can't be a collection.");
+				/*throw new IllegalArgumentException("The provided value ["
+						+ value + "] to convert can't be a collection.");*/
+				log.warn("The provided value is a collection. Attempting to use the first value...");
+				Collection collection = (Collection) value;
+				if (!collection.isEmpty()) {
+					value = collection.iterator().next();
+					log.debug("First value: " + value + " of class: " + value.getClass());
+					if (String.class.isAssignableFrom(value.getClass())) {
+						log.warn("The first value is an String, this shouldn't happen!");
+						log.warn("Unsetting the property!");
+						return unsetProperty(bean, property, null);
+					}
+				} else {
+					log.debug("Collection is empty. Unsetting the property on bean...");
+					return unsetProperty(bean, property, null);
+				}
 			}
 			// This is a many to one annotation. Handler should get the related
 			// entity from repository and set it on the bean field

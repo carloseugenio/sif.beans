@@ -5,10 +5,10 @@ import org.sif.beans.AnnotationUtil;
 import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverterFactory;
 import org.sif.beans.PropertyValueConverterUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.Collection;
@@ -27,14 +27,11 @@ import static org.sif.beans.Classes.classFor;
  * @param <T>
  *            the target bean type.
  */
-@Concrete(delegate = ManyToMany.class)
+@Named("ManyToManyRelationPropertySetter")
 public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> {
 
 	@Inject
 	Logger log;
-
-	@Inject
-	PropertyValueConverterFactory<T> factory;
 
 	@Inject
 	CollectionUtil collectionUtil;

@@ -1,8 +1,15 @@
 package org.sif.beans;
 
+import org.apache.commons.beanutils.BeanUtilsBean2;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
+
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 
@@ -20,9 +27,14 @@ import static org.apache.commons.lang3.StringUtils.remove;
  * @author eugenio
  * 
  */
+@Named
 public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T, I> {
 
+	@Inject
+	Logger log;
+
 	private static final String DISSOCIATE_PREFIX = "dissociate";
+
 	@Inject
 	PropertySetterFactory<T, I> factory;
 
@@ -58,6 +70,11 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T, I> {
 			if (property.startsWith(DISSOCIATE_PREFIX)) {
 				property = remove(property, DISSOCIATE_PREFIX);
 				dissociate = true;
+			}
+			//BeanUtilsBean2.getInstance().getProperty(bean, property);
+			if (!PropertyUtils.isReadable(bean, property)) {
+				log.warn("The property [" + property + "] is not readable on bean [" + bean + "]");
+				continue;
 			}
 			// Create the appropriate property setter
 			PropertySetter<T, I> setter = factory.getFor(bean, property);

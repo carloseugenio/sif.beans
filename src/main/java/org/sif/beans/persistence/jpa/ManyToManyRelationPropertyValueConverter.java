@@ -1,19 +1,17 @@
 package org.sif.beans.persistence.jpa;
 
-import java.util.Collection;
-
-import javax.inject.Inject;
-import javax.persistence.ManyToMany;
-
 import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
 
 import static org.sif.beans.Classes.getFieldClass;
 
-@Concrete(delegate = ManyToMany.class)
+@Named("ManyToManyPropertyValueConverter")
 public class ManyToManyRelationPropertyValueConverter<T> extends
 		ManyToOneRelationPropertyValueConverter<T> implements
 		PropertyValueConverter<T> {

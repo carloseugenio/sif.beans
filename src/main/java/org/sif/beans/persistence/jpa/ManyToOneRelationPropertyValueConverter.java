@@ -1,13 +1,13 @@
 package org.sif.beans.persistence.jpa;
 
-import javax.inject.Inject;
-import javax.persistence.ManyToOne;
-
 import org.sif.beans.AnnotationUtil;
 import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.ManyToOne;
 
 import static org.sif.beans.Classes.classFor;
 import static org.sif.beans.Classes.getFieldClass;
@@ -19,7 +19,7 @@ import static org.sif.beans.Classes.getFieldClass;
  * 
  * @param <T>
  */
-@Concrete(delegate = ManyToOne.class)
+@Named("ManyToOnePropertyValueConverter")
 public class ManyToOneRelationPropertyValueConverter<T> implements
 		PropertyValueConverter<T> {
 

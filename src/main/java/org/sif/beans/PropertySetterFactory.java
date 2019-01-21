@@ -1,30 +1,28 @@
 package org.sif.beans;
 
 import org.sif.beans.persistence.jpa.PropertyRelationUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.persistence.Basic;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-
+import javax.inject.Named;
 import static org.sif.beans.Classes.classFor;
+
+@Named
 public class PropertySetterFactory<T, I> {
 
 	@Inject
 	Logger log;
 
 	@Inject
-	@Concrete(delegate = ManyToOne.class)
+	@Named("ManyToOneRelationPropertySetter")
 	private PropertySetter<T, I> manyToOneRelationSetter;
 
 	@Inject
-	@Concrete(delegate = ManyToMany.class)
+	@Named("ManyToManyRelationPropertySetter")
 	private PropertySetter<T, I> manyToManyRelationSetter;
 
 	@Inject
-	@Concrete(delegate = Basic.class)
+	@Named("SimplePropertySetter")
 	private PropertySetter<T, I> simplePropertySetter;
 
 	@Inject

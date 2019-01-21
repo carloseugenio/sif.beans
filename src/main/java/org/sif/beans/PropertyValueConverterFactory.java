@@ -1,13 +1,10 @@
 package org.sif.beans;
 
 import org.sif.beans.persistence.jpa.PropertyRelationUtil;
-import org.sif.core.persistence.Concrete;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.persistence.Basic;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.inject.Named;
 
 import static org.sif.beans.Classes.classFor;
 /**
@@ -25,15 +22,15 @@ public class PropertyValueConverterFactory<T> {
 	Logger log;
 
 	@Inject
-	@Concrete(delegate = ManyToOne.class)
-	private PropertyValueConverter<T> relationConverter;
+	@Named("ManyToOnePropertyValueConverter")
+	private PropertyValueConverter<T> manyToOneRelationConverter;
 
 	@Inject
-	@Concrete(delegate = ManyToMany.class)
+	@Named("ManyToManyPropertyValueConverter")
 	private PropertyValueConverter<T> manyToManyRelationConverter;
 
 	@Inject
-	@Concrete(delegate = Basic.class)
+	@Named("BasicPropertyValueConverter")
 	private PropertyValueConverter<T> basicValueConverter;
 
 	@Inject
@@ -57,7 +54,7 @@ public class PropertyValueConverterFactory<T> {
 			// if (BeanUtil.isNested(property) &&
 			if (propertyRelationUtil.isManyToOneRelation(classFor(bean),
 					property)) {
-				converter = relationConverter;
+				converter = manyToOneRelationConverter;
 			} else if (propertyRelationUtil.isManyToManyRelation(
 					classFor(bean), property)) {
 				converter = manyToManyRelationConverter;
