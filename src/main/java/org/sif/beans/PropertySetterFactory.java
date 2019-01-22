@@ -2,6 +2,7 @@ package org.sif.beans;
 
 import org.sif.beans.persistence.jpa.PropertyRelationUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -10,25 +11,24 @@ import static org.sif.beans.Classes.classFor;
 @Named
 public class PropertySetterFactory<T, I> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	@Named("ManyToOneRelationPropertySetter")
-	private PropertySetter<T, I> manyToOneRelationSetter;
+	PropertySetter<T, I> manyToOneRelationSetter;
 
 	@Inject
 	@Named("ManyToManyRelationPropertySetter")
-	private PropertySetter<T, I> manyToManyRelationSetter;
+	PropertySetter<T, I> manyToManyRelationSetter;
 
 	@Inject
 	@Named("SimplePropertySetter")
-	private PropertySetter<T, I> simplePropertySetter;
+	PropertySetter<T, I> simplePropertySetter;
 
 	@Inject
-	private PropertyRelationUtil propertyRelationUtil;
+	PropertyRelationUtil propertyRelationUtil;
 
-	public PropertySetter<T, I> getFor(T bean, String property) throws Exception {
+	public PropertySetter<T, I> getFor(T bean, String property) {
 		log.debug("Bean: " + bean);
 		log.debug("Getting PropertySetter for bean ["
 				+ classFor(bean) + "] and property [" + property + "]");
@@ -56,7 +56,7 @@ public class PropertySetterFactory<T, I> {
 			return setter;
 		} catch (Exception ex) {
 			log.error(ex.toString(), ex);
-			throw ex;
+			throw new RuntimeException(ex);
 		}
 	}
 

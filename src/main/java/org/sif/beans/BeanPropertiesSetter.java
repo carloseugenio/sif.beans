@@ -5,6 +5,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -28,10 +29,9 @@ import static org.apache.commons.lang3.StringUtils.remove;
  * 
  */
 @Named
-public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T, I> {
+public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(BeanPropertiesSetter.class);
 
 	private static final String DISSOCIATE_PREFIX = "dissociate";
 
@@ -58,8 +58,7 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T, I> {
 	 *             looking up a bean.
 	 */
 	@Override
-	public void setAllProperties(T bean, Map<String, Object> parameters)
-			throws Exception {
+	public void setAllProperties(T bean, Map<String, Object> parameters) {
 		// For each key in the parameters map
 		for (String property : parameters.keySet()) {
 			// First get the parameter value before any modifications

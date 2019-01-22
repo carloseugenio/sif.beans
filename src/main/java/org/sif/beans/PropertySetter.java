@@ -25,7 +25,7 @@ public interface PropertySetter<T, I> {
 	 * @throws Exception
 	 *             if there is a problem setting the property
 	 */
-	T setProperty(T bean, String property, Object value) throws Exception;
+	T setProperty(T bean, String property, Object value);
 	
 	/**
 	 * Unset a single property for the bean. The implementation must be able to
@@ -42,6 +42,6 @@ public interface PropertySetter<T, I> {
 	 * @throws Exception
 	 *             if there is a problem setting the property
 	 */	
-	T unsetProperty(T bean, String property, Object value) throws Exception;
+	T unsetProperty(T bean, String property, Object value);
 
 }

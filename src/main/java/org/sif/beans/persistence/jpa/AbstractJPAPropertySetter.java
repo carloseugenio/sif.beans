@@ -23,22 +23,15 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 	 * The facade for the main bean.
 	 */
 	@Inject
-	PersistenceManager<T, I> facade;
+	private PersistenceManager<T, I> facade;
 
-	/**
-	 * Facade used to execute persistence operations on the relation bean of
-	 * some source bean property, not the source bean itself. This facade does
-	 * not have type parameters because at this point we don't know which type
-	 * the relationship is.
-	 */
 	@SuppressWarnings("rawtypes")
 	@Inject
-	PersistenceManager relationFacade;
+	private	PersistenceManager relationFacade;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public final T setProperty(T bean, String property, Object value)
-			throws Exception {
+	public final T setProperty(T bean, String property, Object value) {
 		facade.setBeanClass((Class<T>) classFor(bean));
 		return doSetProperty(bean, property, value);
 	}
@@ -50,9 +43,29 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 	 * @param property the property to set
 	 * @param value the value to set
 	 * @return the bean hose property was set
-	 * @throws Exception if an exception occurs
 	 */
-	public abstract T doSetProperty(T bean, String property, Object value)
-			throws Exception;
+	public abstract T doSetProperty(T bean, String property, Object value);
+
+	/**
+	 * Facade used to execute persistence operations on the relation bean of
+	 * some source bean property, not the source bean itself. This facade does
+	 * not have type parameters because at this point we don't know which type
+	 * the relationship is.
+	 */
+	public PersistenceManager getRelationFacade() {
+		return relationFacade;
+	}
+
+	public void setRelationFacade(PersistenceManager relationFacade) {
+		this.relationFacade = relationFacade;
+	}
+
+	public PersistenceManager<T, I> getFacade() {
+		return facade;
+	}
+
+	public void setFacade(PersistenceManager<T, I> facade) {
+		this.facade = facade;
+	}
 
 }

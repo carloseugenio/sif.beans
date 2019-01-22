@@ -3,7 +3,6 @@ package org.sif.beans.persistence.jpa;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.sif.beans.AnnotationUtil;
 import org.sif.beans.CollectionUtil;
-import org.sif.beans.PropertyValueConverterFactory;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
 
@@ -40,8 +39,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 	PropertyValueConverterUtil converterUtil;
 	
 	@Override
-	public T doSetProperty(T bean, String property, Object value)
-			throws Exception {
+	public T doSetProperty(T bean, String property, Object value) {
 		log.debug("Setting property [" + property + "] on bean ["
 				+ classFor(bean).getSimpleName() + "] with value [" + value
 				+ "]");
@@ -61,8 +59,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleManyToManyRelation(T bean, String property, Object value)
-			throws Exception {
+	private void handleManyToManyRelation(T bean, String property, Object value) {
 		log.debug("Getting the relation bean class for ["
 				+ classFor(bean).getSimpleName() + "] and property ["
 				+ property + "]");
@@ -76,10 +73,15 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 		// Instantiate a facade for the relation property class (as declared in
 		// the main bean). The facade will be later used to retrieve elements
 		// from persistence storage.
-		relationFacade.setBeanClass(relationBeanClass);
+		getRelationFacade().setBeanClass(relationBeanClass);
 		log.debug("Getting property [" + property + "] on bean [" + bean + "]");
 		// The collection field value. This is the current collection values
-		Object fieldValue = PropertyUtils.getProperty(bean, property);
+		Object fieldValue = null;
+		try {
+			fieldValue = PropertyUtils.getProperty(bean, property);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		log.debug("Property [" + property + "] found. Value: " + fieldValue);
 		@SuppressWarnings("rawtypes")
 		Collection collectionValue = (Collection) fieldValue;
@@ -89,7 +91,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 			log.debug("The value ["
 					+ value
 					+ "] is a collection. Using the facade to retrieve elements from persistence storage...");
-			List<?> loaded = relationFacade.findByField(primaryKeyField, value);
+			List<?> loaded = getRelationFacade().findByField(primaryKeyField, value);
 			collectionValue.addAll(loaded);
 			log.debug("All Values added to the collection!");
 		} else {
@@ -99,7 +101,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 					primaryKeyField, value);
 			// Find the target entity using the converted value for the primary
 			// key
-			Object loaded = relationFacade.load(convertedValue);
+			Object loaded = getRelationFacade().load(convertedValue);
 			log.debug("Loaded: " + loaded);
 			// Adds the loaded entity on the collection field
 			collectionValue.add(loaded);
@@ -108,8 +110,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 	}
 
 	@Override
-	public T unsetProperty(T bean, String property, Object value)
-			throws Exception {
+	public T unsetProperty(T bean, String property, Object value) {
 		log.debug("UnSetting property [" + property + "] on bean ["
 				+ classFor(bean).getSimpleName() + "] with value [" + value
 				+ "]");
@@ -128,7 +129,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 
 	@SuppressWarnings("unchecked")
 	private void handleManyToManyRemoveRelation(T bean, String property,
-			Object value) throws Exception {
+			Object value) {
 		log.debug("Getting the relation bean class for ["
 				+ classFor(bean).getSimpleName() + "] and property ["
 				+ property + "]");
@@ -142,10 +143,15 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 		// Instantiate a facade for the relation property class (as declared in
 		// the main bean). The facade will be later used to retrieve elements
 		// from persistence storage.
-		relationFacade.setBeanClass(relationBeanClass);
+		getRelationFacade().setBeanClass(relationBeanClass);
 		log.debug("Getting property [" + property + "] on bean [" + bean + "]");
 		// The collection field value. This is the current collection values
-		Object fieldValue = PropertyUtils.getProperty(bean, property);
+		Object fieldValue = null;
+		try {
+			fieldValue = PropertyUtils.getProperty(bean, property);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		log.debug("Property [" + property + "] found. Value: " + fieldValue);
 		@SuppressWarnings("rawtypes")
 		Collection collectionValue = (Collection) fieldValue;
@@ -155,7 +161,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 			log.debug("The value ["
 					+ value
 					+ "] is a collection. Using the facade to retreive elements from persistence storage...");
-			List<?> loaded = relationFacade.findByField(primaryKeyField, value);
+			List<?> loaded = getRelationFacade().findByField(primaryKeyField, value);
 			collectionValue.removeAll(loaded);
 			log.debug("All Values removed from collection!");
 			log.debug("New collection value: " + collectionValue);
@@ -169,7 +175,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 					+ classFor(convertedValue) + "]");
 			// Find the target entity using the converted value for the primary
 			// key
-			Object loaded = relationFacade.load(convertedValue);
+			Object loaded = getRelationFacade().load(convertedValue);
 			log.debug("Loaded: " + loaded);
 			// Adds the loaded entity on the collection field
 			collectionValue.remove(loaded);

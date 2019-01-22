@@ -10,7 +10,7 @@ import java.util.Map;
  * @param <T>
  *            the bean type
  */
-public interface PropertiesSetter<T, I> {
+public interface PropertiesSetter<T> {
 
 	/**
 	 * Set all properties found in the provided bean with the provided
@@ -25,6 +25,6 @@ public interface PropertiesSetter<T, I> {
 	 *            a Map providing property values to set in the destination bean
 	 * @throws Exception if an exception occurs while setting the bean properties 
 	 */
-	void setAllProperties(T bean, Map<String, Object> parameters) throws Exception;
+	void setAllProperties(T bean, Map<String, Object> parameters);
 
 }

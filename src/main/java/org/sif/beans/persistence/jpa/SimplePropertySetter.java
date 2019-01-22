@@ -3,10 +3,12 @@ package org.sif.beans.persistence.jpa;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import static org.sif.beans.Classes.classFor;
@@ -14,14 +16,18 @@ import static org.sif.beans.Classes.classFor;
 @Named("SimplePropertySetter")
 public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public T doSetProperty(T bean, String property, Object value) throws Exception {
+	public T doSetProperty(T bean, String property, Object value) {
 		Object originalValue = value;
 		log.debug("Setting simple value on bean [" + bean + "]: " + originalValue);
-		Class<?> propertyType = PropertyUtils.getPropertyType(bean, property);
+		Class<?> propertyType = null;
+		try {
+			propertyType = PropertyUtils.getPropertyType(bean, property);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		log.debug("Target property type on bean: " + propertyType);
 		if (classFor(originalValue).isArray() && propertyType.isArray()) {
 			log.debug("The value[" + originalValue + "] and target properties are arrays. Setting directly...");
@@ -43,7 +49,11 @@ public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> 
 		}
 		log.debug("Setting converted value on bean [" + bean + "]: " + originalValue);
 		// Sets the converted value in the target property
-		BeanUtils.setProperty(bean, property, originalValue);
+		try {
+			BeanUtils.setProperty(bean, property, originalValue);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		// Return the modified bean
 		return bean;
 	}
@@ -61,7 +71,7 @@ public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> 
 	}
 
 	@Override
-	public T unsetProperty(T bean, String property, Object value) throws Exception {
+	public T unsetProperty(T bean, String property, Object value) {
 		// TODO Auto-generated method stub
 		return null;
 	}

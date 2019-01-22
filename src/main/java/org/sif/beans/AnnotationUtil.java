@@ -473,8 +473,7 @@ public final class AnnotationUtil {
 		return AnnotationUtil.fieldHasAnyAnnotation(beanClass, fieldName, annotations);
 	}
 
-	public static Class<?> getTypeParameterClassForManyToManyField(Class<?> beanClass, String fieldName)
-			throws Exception {
+	public static Class<?> getTypeParameterClassForManyToManyField(Class<?> beanClass, String fieldName) {
 		// It is the generic type applied to the collection.
 		Field annotatedField = getField(beanClass, fieldName);
 		// getLog().info("Annotated field: " + annotatedField);

@@ -41,8 +41,7 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 	PropertyValueConverterUtil converterUtil;
 
 	@Override
-	public T doSetProperty(T bean, String property, Object value)
-			throws Exception {
+	public T doSetProperty(T bean, String property, Object value) {
 		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(
 				classFor(bean), property, ManyToOne.class);
 		if (isManyToOne) {
@@ -90,13 +89,12 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleManyToOneRelation(T bean, String property, Object value)
-			throws Exception {
+	private void handleManyToOneRelation(T bean, String property, Object value) {
 		// Get the property class that is the relation class
 		Class<?> relationBeanClass = getFieldClass(classFor(bean),
 				property);
 		// can only setup the relation facade now
-		relationFacade.setBeanClass(relationBeanClass);
+		getRelationFacade().setBeanClass(relationBeanClass);
 
 		// TODO: This "ID" is fixed, refactor it to make it configurable
 		String primaryKeyField = "id";
@@ -106,7 +104,7 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 				primaryKeyField, value);
 		// Find the target entity using the converted value for the primary key
 		// It must use the relation facade
-		List<?> relationEntities = relationFacade.findByField(primaryKeyField,
+		List<?> relationEntities = getRelationFacade().findByField(primaryKeyField,
 				primaryKeyValue);
 		// Check the return value
 		ensureOnlyOneValueReturned(relationEntities, primaryKeyField,
@@ -114,7 +112,11 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 		// Pickup the first element found
 		Object relationEntity = relationEntities.get(0);
 		// Sets the relation entity found in the target bean
-		BeanUtils.setProperty(bean, property, relationEntity);
+		try {
+			BeanUtils.setProperty(bean, property, relationEntity);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void ensureOnlyOneValueReturned(List<?> relationEntities,
@@ -145,8 +147,7 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 	}
 
 	@Override
-	public T unsetProperty(T bean, String property, Object value)
-			throws Exception {
+	public T unsetProperty(T bean, String property, Object value) {
 		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(
 				classFor(bean), property, ManyToOne.class);
 		if (isManyToOne) {
@@ -158,7 +159,11 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 			}
 			// This is a many to one annotation. Handler should get the related
 			// entity from repository and unset it on the bean field
-			BeanUtils.setProperty(bean, property, null);
+			try {
+				BeanUtils.setProperty(bean, property, null);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		} else {
 			throw new IllegalArgumentException("The provided property ["
 					+ property + "] is not a many to one property on bean ["
