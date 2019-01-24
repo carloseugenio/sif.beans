@@ -33,18 +33,22 @@ public class CollectionUtil {
 		if (!isCollection(collectionObject)) {
 			log.debug("Element is not a collection!");
 			return collectionObject;
-		}
-		if (isArrayCollection(collectionObject)) {
+		} else if (isArrayCollection(collectionObject)) {
 			Object[] objects = ((Object[])collectionObject);
 			if (objects.length > 0) {
 				return objects[0];
 			}
-		}
-		if (isRawCollection(collectionObject)) {
+		} else if (isRawCollection(collectionObject)) {
 			Collection collection = ((Collection) collectionObject);
 			if (!collection.isEmpty()) {
 				return collection.iterator().next();
 			}
+		} else if (isStringCommaSeparatedArray(collectionObject)) {
+			PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
+			Collection collection = converterUtil.valueListToCollection(
+					collectionObject, List.class, Integer.class);
+		} else {
+			throw new IllegalArgumentException("Invalid collection object to convert: " + collectionObject);
 		}
 		return collectionObject;
 	}
