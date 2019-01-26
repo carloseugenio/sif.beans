@@ -1,6 +1,9 @@
 package org.sif.beans;
 
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.converters.IntegerConverter;
+import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +33,15 @@ public class PropertyValueConverterUtil {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	CollectionUtil collectionUtil = new CollectionUtil();
+
+	static {
+		Converter intConverter = new IntegerConverter();
+		Converter longConverter = new LongConverter();
+		ConvertUtils.register(intConverter, Integer.TYPE);
+		ConvertUtils.register(intConverter, Integer.class);
+		ConvertUtils.register(longConverter, Long.TYPE);
+		ConvertUtils.register(longConverter, Long.class);
+	}
 
 	/**
 	 * Converts the given value to the correct list type
@@ -181,8 +193,9 @@ public class PropertyValueConverterUtil {
 				}
 			}
 			log.debug("Converting [" + value + "] to [" + clazz + "]");
-			//String stringValue = value.toString();
-			convertedValue = ConvertUtils.convert(value, clazz);
+			Converter converter = ConvertUtils.lookup(clazz);
+			log.debug("Converter found: " + converter);
+			convertedValue = converter.convert(clazz, value);
 			log.debug("Converted value: " + convertedValue);
 			if (convertedValue != null) {
 				log.debug("ConvertedType: " + classFor(convertedValue));

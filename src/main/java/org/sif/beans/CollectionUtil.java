@@ -28,9 +28,9 @@ public class CollectionUtil {
 	 * If the given object is a collection, returns the first element on the collection, if there is
 	 * one, or else return the object itself
 	 */
-	public Object getFirstCollectionElement(final Object collectionObject) {
+	public Object getFirstCollectionElement(final Object collectionObject, Class<?> type) {
 		log.debug("Getting first element for: " + collectionObject);
-		if (!isCollection(collectionObject)) {
+		if (!isCollectionOfAnyType(collectionObject)) {
 			log.debug("Element is not a collection!");
 			return collectionObject;
 		} else if (isArrayCollection(collectionObject)) {
@@ -46,7 +46,10 @@ public class CollectionUtil {
 		} else if (isStringCommaSeparatedArray(collectionObject)) {
 			PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
 			Collection collection = converterUtil.valueListToCollection(
-					collectionObject, List.class, Integer.class);
+					collectionObject, List.class, type);
+			if (!collection.isEmpty()) {
+				return collection.iterator().next();
+			}
 		} else {
 			throw new IllegalArgumentException("Invalid collection object to convert: " + collectionObject);
 		}
