@@ -25,13 +25,18 @@ public class CollectionUtilTest {
 
 	@Test
 	public void getFirstCollectionElementForBeanIdType() {
-		assertEquals("1", collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Integer.class));
-		assertEquals("1", collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Long.class));
+		assertEquals(1, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Integer.class));
+		assertEquals(1L, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Long.class));
 	}
 
 	@Test(expected = ConversionException.class)
 	public void getFirstCollectionElementWrongType() {
 		collectionUtil.getFirstCollectionElement(commaSeparatedList, Integer.class);
+	}
+
+	@Test(expected = ConversionException.class)
+	public void getFirstCollectionElementWrongTypeForArray() {
+		collectionUtil.getFirstCollectionElement(stringArrayCollection, Integer.class);
 	}
 
 	@Test

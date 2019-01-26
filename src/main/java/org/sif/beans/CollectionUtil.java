@@ -33,25 +33,13 @@ public class CollectionUtil {
 		if (!isCollectionOfAnyType(collectionObject)) {
 			log.debug("Element is not a collection!");
 			return collectionObject;
-		} else if (isArrayCollection(collectionObject)) {
-			Object[] objects = ((Object[])collectionObject);
-			if (objects.length > 0) {
-				return objects[0];
-			}
-		} else if (isRawCollection(collectionObject)) {
-			Collection collection = ((Collection) collectionObject);
-			if (!collection.isEmpty()) {
-				return collection.iterator().next();
-			}
-		} else if (isStringCommaSeparatedArray(collectionObject)) {
+		} else {
 			PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
 			Collection collection = converterUtil.valueListToCollection(
 					collectionObject, List.class, type);
 			if (!collection.isEmpty()) {
 				return collection.iterator().next();
 			}
-		} else {
-			throw new IllegalArgumentException("Invalid collection object to convert: " + collectionObject);
 		}
 		return collectionObject;
 	}

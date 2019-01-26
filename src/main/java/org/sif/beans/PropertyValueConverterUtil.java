@@ -211,7 +211,7 @@ public class PropertyValueConverterUtil {
 	 * provided type.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <T> Collection<?> valueListToCollection(Object value,
+	public Collection<?> valueListToCollection(Object value,
 			Class<? extends Collection> collectionType, Class<?> elementType) {
 		log.debug("The conversion from value [" + value
 				+ "] to the collection type [" + collectionType.getSimpleName()
