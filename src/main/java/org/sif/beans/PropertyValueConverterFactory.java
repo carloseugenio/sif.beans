@@ -2,6 +2,7 @@ package org.sif.beans;
 
 import org.sif.beans.persistence.jpa.PropertyRelationUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -18,8 +19,7 @@ import static org.sif.beans.Classes.classFor;
  */
 public class PropertyValueConverterFactory<T> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	@Named("ManyToOnePropertyValueConverter")

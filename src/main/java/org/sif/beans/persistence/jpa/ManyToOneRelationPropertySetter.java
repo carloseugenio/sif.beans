@@ -5,6 +5,7 @@ import org.sif.beans.AnnotationUtil;
 import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,8 +32,7 @@ import static org.sif.beans.Classes.getFieldClass;
 public class ManyToOneRelationPropertySetter<T, I> extends
 		AbstractJPAPropertySetter<T, I> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	CollectionUtil collectionUtil;

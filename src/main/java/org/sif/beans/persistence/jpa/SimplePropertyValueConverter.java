@@ -3,6 +3,7 @@ package org.sif.beans.persistence.jpa;
 import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -13,8 +14,7 @@ import static org.sif.beans.Classes.getFieldClass;
 public class SimplePropertyValueConverter<T> implements
 		PropertyValueConverter<T> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	PropertyValueConverterUtil converterUtil;

@@ -4,6 +4,7 @@ import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,8 +17,7 @@ public class ManyToManyRelationPropertyValueConverter<T> extends
 		ManyToOneRelationPropertyValueConverter<T> implements
 		PropertyValueConverter<T> {
 
-	@Inject
-	Logger log;
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	PropertyValueConverterUtil converterUtil;
