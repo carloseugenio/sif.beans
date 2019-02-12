@@ -2,9 +2,12 @@ package org.sif.beans;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.sif.beans.persistence.jpa.*;
 
@@ -15,13 +18,17 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BeanPropertiesSetterTest {
 
 	BeanPropertiesSetter bps = new BeanPropertiesSetter();
 	TestBean bean = new TestBean();
 	Map<String, Object> parameters = new HashMap<>();
 
+	@Mock
 	ManyToOneRelationPropertySetter manyToOneRelationPropertySetter;
+
+	@Mock PersistenceManager facade;
 
 	PropertySetterFactory factory = spy(new PropertySetterFactory());
 
@@ -33,6 +40,7 @@ public class BeanPropertiesSetterTest {
 	public void setup() {
 
 		factory.setManyToOneRelationSetter(manyToOneRelationPropertySetter);
+		when(manyToOneRelationPropertySetter.getFacade()).thenReturn(facade);
 
 		PropertySetter simpleSetter = new SimplePropertySetter();
 		((AbstractJPAPropertySetter)simpleSetter).setRelationFacade(mock(PersistenceManager.class));
@@ -68,31 +76,24 @@ public class BeanPropertiesSetterTest {
 		Employee employee = new Employee();
 		Department department = new Department();
 
-		PersistenceManager manager = mock(PersistenceManager.class);
-		manyToOneRelationPropertySetter = mock(ManyToOneRelationPropertySetter.class);
-		((ManyToOneRelationPropertySetter) manyToOneRelationPropertySetter).setFacade(manager);
-
-		when(factory.getFor(any(), anyString())).thenReturn(manyToOneRelationPropertySetter);
-
-		when(((ManyToOneRelationPropertySetter) manyToOneRelationPropertySetter).
-				doSetProperty(any(), any(), any())).then(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return manyToOneRelationPropertySetter;
-			}
-		});
-
-		when(((ManyToOneRelationPropertySetter) manyToOneRelationPropertySetter).
-				setProperty(any(), any(), any())).then(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				return manyToOneRelationPropertySetter;
-			}
-		});
 
 		addParameter("department", department);
+
 		bps.setAllProperties(employee, parameters);
-		assertEquals(department, employee.getDepartment());
+
+		verify(this.manyToOneRelationPropertySetter, times(1)).doSetProperty(employee, "department", department);
+	}
+
+	@Test
+	public void testRelationPropertyUnSet() {
+		Employee employee = new Employee();
+
+		addParameter(BeanPropertiesSetter.DISSOCIATE_PREFIX + "department", 1);
+
+		bps.setAllProperties(employee, parameters);
+
+		verify(this.manyToOneRelationPropertySetter,
+				times(1)).unsetProperty(employee, "department", 1);
 	}
 
 }

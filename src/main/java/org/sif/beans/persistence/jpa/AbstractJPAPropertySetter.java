@@ -30,8 +30,12 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public final T setProperty(T bean, String property, Object value) {
-		facade.setBeanClass((Class<T>) classFor(bean));
+		getFacade().setBeanClass(classFor(bean));
 		return doSetProperty(bean, property, value);
+	}
+
+	public PersistenceManager getFacade() {
+		return this.facade;
 	}
 
 	/**

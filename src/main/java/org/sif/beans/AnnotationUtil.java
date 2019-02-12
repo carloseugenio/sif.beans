@@ -16,9 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.sif.beans.Classes.classFor;
 
@@ -323,9 +321,8 @@ public final class AnnotationUtil {
 	 * @return all bean properties down to its hierarchy
 	 */
 	public static List<AnnotatedElement> getAllAnnotatedElements(Class<?> beanClass) {
-		List<AnnotatedElement> annotatedFields = new ArrayList<AnnotatedElement>();
 		getLog().trace("Loading all annotated fields for Many to Many...");
-		fillAllAnnotatedFields(beanClass, annotatedFields);
+		List<AnnotatedElement> annotatedFields = fillAllAnnotatedFields(beanClass, null);
 		return annotatedFields;
 	}
 
@@ -340,10 +337,9 @@ public final class AnnotationUtil {
 	 * @return all bean {@link Field}s down to its hierarchy
 	 */
 	public static List<Field> getAllAnnotatedFields(Class<?> beanClass) {
-		List<AnnotatedElement> annotatedElements = new ArrayList<AnnotatedElement>();
 		getLog().trace("Loading all annotated fields for bean [" + beanClass.getSimpleName() + "] ...");
-		fillAllAnnotatedFields(beanClass, annotatedElements);
-		List<Field> fields = new ArrayList<Field>();
+		List<AnnotatedElement> annotatedElements = fillAllAnnotatedFields(beanClass, null);
+		List<Field> fields = new ArrayList<>();
 		for (AnnotatedElement element : annotatedElements) {
 			fields.add((Field) element);
 		}
@@ -365,11 +361,10 @@ public final class AnnotationUtil {
 	 */
 	static List<AnnotatedElement> fillAllAnnotatedFields(Class<?> beanClass, List<AnnotatedElement> annotatedFields) {
 		if (annotatedFields == null) {
-			annotatedFields = new ArrayList<AnnotatedElement>();
+			annotatedFields = new ArrayList<>();
 		}
 		if (beanClass == null) {
-			getLog().error("Can't fill annotated fields for beanClass null!!!");
-			return annotatedFields;
+			throw new IllegalArgumentException("Can't fill annotated fields for beanClass null!!!");
 		}
 		String simpleName = beanClass.getSimpleName();
 		getLog().trace("Filling annotated fields for: " + simpleName);

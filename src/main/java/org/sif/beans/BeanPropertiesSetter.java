@@ -29,7 +29,7 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 
 	Logger log = LoggerFactory.getLogger(BeanPropertiesSetter.class);
 
-	private static final String DISSOCIATE_PREFIX = "dissociate";
+	public static final String DISSOCIATE_PREFIX = "dissociate-";
 
 	private PropertySetterFactory<T, I> factory;
 
@@ -66,6 +66,7 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 			if (property.startsWith(DISSOCIATE_PREFIX)) {
 				property = remove(property, DISSOCIATE_PREFIX);
 				dissociate = true;
+				log.debug("Found DISSOCIATE PREFIX. Property to unset: " + property);
 			}
 			//BeanUtilsBean2.getInstance().getProperty(bean, property);
 			if (!PropertyUtils.isReadable(bean, property)) {
