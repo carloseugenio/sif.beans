@@ -72,10 +72,11 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test
-	public void convert1() {
+	public void convertSingleStringNumberValueToLongList() {
+		List<Long> expected = Arrays.asList(1L);
+		String value = "1";
+		Object result = converterUtil.asList(Long.class, value);
+		assertEquals(expected, result);
 	}
 
-	@Test
-	public void valueListToCollection() {
-	}
 }

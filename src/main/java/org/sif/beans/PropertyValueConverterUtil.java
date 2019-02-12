@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,6 +237,9 @@ public class PropertyValueConverterUtil {
 			log.debug("The stirng list was converted to: "
 					+ stringArrayAsTypeCollection);
 			elements.addAll(stringArrayAsTypeCollection);
+		} else if (value != null & Number.class.isAssignableFrom(elementType) & NumberUtils.isCreatable(value.toString())) {
+			log.debug("The value is a single element convertable to a Number!");
+			elements.add(convert(elementType, value));
 		}
 		return elements;
 	}
