@@ -1,16 +1,12 @@
 package org.sif.beans;
 
-import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 
@@ -35,8 +31,7 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 
 	private static final String DISSOCIATE_PREFIX = "dissociate";
 
-	@Inject
-	PropertySetterFactory<T, I> factory;
+	private PropertySetterFactory<T, I> factory;
 
 	/**
 	 * Set all properties found in the provided bean with the provided
@@ -59,10 +54,12 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 	 */
 	@Override
 	public void setAllProperties(T bean, Map<String, Object> parameters) {
+		log.debug("Setting all properties with parameters: " + parameters);
 		// For each key in the parameters map
 		for (String property : parameters.keySet()) {
 			// First get the parameter value before any modifications
 			Object parameterValue = parameters.get(property);
+			log.debug("Handling property: [" + property + "] with value: [" + parameterValue + "]");
 			boolean dissociate = false;
 			// If the dissociate prefix was used, change it to the real property
 			// name
@@ -85,5 +82,10 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 				setter.setProperty(bean, property, parameterValue);
 			}
 		}
+	}
+
+	@Inject
+	public void setFactory(PropertySetterFactory<T, I> factory) {
+		this.factory = factory;
 	}
 }

@@ -13,20 +13,36 @@ public class PropertySetterFactory<T, I> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	private PropertySetter<T, I> manyToOneRelationSetter;
+
+	private PropertySetter<T, I> manyToManyRelationSetter;
+
+	private PropertySetter<T, I> simplePropertySetter;
+
+	private PropertyRelationUtil propertyRelationUtil;
+
 	@Inject
 	@Named("ManyToOneRelationPropertySetter")
-	PropertySetter<T, I> manyToOneRelationSetter;
+	public void setManyToOneRelationSetter(PropertySetter<T, I> manyToOneRelationSetter) {
+		this.manyToOneRelationSetter = manyToOneRelationSetter;
+	}
 
 	@Inject
 	@Named("ManyToManyRelationPropertySetter")
-	PropertySetter<T, I> manyToManyRelationSetter;
+	public void setManyToManyRelationSetter(PropertySetter<T, I> manyToManyRelationSetter) {
+		this.manyToManyRelationSetter = manyToManyRelationSetter;
+	}
 
 	@Inject
 	@Named("SimplePropertySetter")
-	PropertySetter<T, I> simplePropertySetter;
+	public void setSimplePropertySetter(PropertySetter<T, I> simplePropertySetter) {
+		this.simplePropertySetter = simplePropertySetter;
+	}
 
 	@Inject
-	PropertyRelationUtil propertyRelationUtil;
+	public void setPropertyRelationUtil(PropertyRelationUtil propertyRelationUtil) {
+		this.propertyRelationUtil = propertyRelationUtil;
+	}
 
 	public PropertySetter<T, I> getFor(T bean, String property) {
 		log.debug("Bean: " + bean);

@@ -22,11 +22,9 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 	/**
 	 * The facade for the main bean.
 	 */
-	@Inject
 	private PersistenceManager<T, I> facade;
 
 	@SuppressWarnings("rawtypes")
-	@Inject
 	private	PersistenceManager relationFacade;
 
 	@SuppressWarnings("unchecked")
@@ -56,14 +54,12 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 		return relationFacade;
 	}
 
-	public void setRelationFacade(PersistenceManager relationFacade) {
+	@Inject
+	public void setRelationFacade(PersistenceManager<T, I> relationFacade) {
 		this.relationFacade = relationFacade;
 	}
 
-	public PersistenceManager<T, I> getFacade() {
-		return facade;
-	}
-
+	@Inject
 	public void setFacade(PersistenceManager<T, I> facade) {
 		this.facade = facade;
 	}
