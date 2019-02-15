@@ -46,6 +46,10 @@ public class Employee implements Serializable {
 	@OneToMany(targetEntity=Department.class)
 	private Set<Department> coordinator = new HashSet<>();
 
+	@Basic(optional = true)
+	private Boolean employed;
+
+
 	public Long getId() {
 		return id;
 	}
@@ -101,5 +105,13 @@ public class Employee implements Serializable {
 				"id=" + id +
 				", name='" + name + '\'' +
 				'}';
+	}
+
+	public Boolean getEmployed() {
+		return employed;
+	}
+
+	public void setEmployed(Boolean employed) {
+		this.employed = employed;
 	}
 }
