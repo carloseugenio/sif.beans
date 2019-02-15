@@ -2,21 +2,20 @@ package org.sif.beans;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.IntegerConverter;
-import org.apache.commons.beanutils.converters.LongConverter;
+import org.apache.commons.beanutils.converters.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.sif.beans.converters.IgnoreEmptyConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static org.sif.beans.Classes.*;
+import static org.sif.beans.Debugger.debug;
 
 /**
  * Utility class for converting a simple value to a provided class.
@@ -35,13 +34,49 @@ public class PropertyValueConverterUtil {
 
 	CollectionUtil collectionUtil = new CollectionUtil();
 
-	static {
-		Converter intConverter = new IntegerConverter();
-		Converter longConverter = new LongConverter();
+	/**
+	 * Register converters without using the default value
+	 */
+	{
+		registerConverters();
+	}
+
+	public void registerConverters() {
+		Converter booleanConverter = new IgnoreEmptyConverter(new BooleanConverter());
+		ConvertUtils.register(booleanConverter, Boolean.TYPE);
+		ConvertUtils.register(booleanConverter, Boolean.class);
+
+		Converter byteConverter = new IgnoreEmptyConverter(new ByteConverter());
+		ConvertUtils.register(byteConverter, Byte.TYPE);
+		ConvertUtils.register(byteConverter, Byte.class);
+
+		Converter shortConverter = new IgnoreEmptyConverter(new ShortConverter());
+		ConvertUtils.register(shortConverter, Short.TYPE);
+		ConvertUtils.register(shortConverter, Short.class);
+
+		Converter intConverter = new IgnoreEmptyConverter(new IntegerConverter());
 		ConvertUtils.register(intConverter, Integer.TYPE);
 		ConvertUtils.register(intConverter, Integer.class);
+
+		Converter longConverter = new IgnoreEmptyConverter(new LongConverter());
 		ConvertUtils.register(longConverter, Long.TYPE);
 		ConvertUtils.register(longConverter, Long.class);
+
+		Converter floatConverter = new IgnoreEmptyConverter(new FloatConverter());
+		ConvertUtils.register(floatConverter, Float.TYPE);
+		ConvertUtils.register(floatConverter, Float.class);
+
+		Converter doubleConverter = new IgnoreEmptyConverter(new DoubleConverter());
+		ConvertUtils.register(doubleConverter, Double.TYPE);
+		ConvertUtils.register(doubleConverter, Double.class);
+
+		Converter dateConverter = new IgnoreEmptyConverter(new DateConverter());
+		ConvertUtils.register(dateConverter, java.util.Date.class);
+		ConvertUtils.register(dateConverter, java.sql.Date.class);
+		ConvertUtils.register(dateConverter, Timestamp.class);
+		//ConvertUtils.register(new CommonsDateConverter(), java.util.Date.class);
+		//ConvertUtils.register(new CommonsDateConverter(), java.sql.Date.class);
+		//ConvertUtils.register(new CommonsDateConverter(), java.sql.Timestamp.class);
 	}
 
 	/**
@@ -51,7 +86,7 @@ public class PropertyValueConverterUtil {
 	 * @return as list of the given type with the given elements
 	 */
 	public List<?> asList(Class<?> listType, Object value) {
-		log.debug("Converting value ==" + value + "== of class: "
+		log.debug("Converting value " + debug(value) + " of class: "
 				+ classFor(value).getSimpleName() + ", to a List of type: " + listType + " ...");
 		log.debug("Converting to List...");
 		// The given object is an array.
@@ -132,8 +167,8 @@ public class PropertyValueConverterUtil {
 				+ stringList);
 		for (String str : stringList) {
 			String trimmed = str.trim();
-			log.trace("Conventing the list element [" + trimmed
-					+ "] to the provided type [" + elementType.getSimpleName());
+			log.trace("Conventing the list element " + debug(trimmed)
+					+ " to the provided type [" + elementType.getSimpleName());
 			Object convertedElement = convert(elementType, trimmed);
 			log.trace("Converted element type: "
 					+ classFor(convertedElement).getSimpleName());
@@ -149,8 +184,8 @@ public class PropertyValueConverterUtil {
 		log.debug("Getting the type for property [" + beanProperty
 				+ "] of class [" + beanClass + "].");
 		Class<?> fieldType = getFieldClass(beanClass, beanProperty);
-		log.debug("Trying to convert value [" + value
-				+ "] to target Field Type [" + fieldType + "]");
+		log.debug("Trying to convert value " + debug(value)
+				+ " to target Field Type [" + fieldType + "]");
 		return this.convert(fieldType, value);
 	}
 
@@ -172,7 +207,7 @@ public class PropertyValueConverterUtil {
 			throw new IllegalArgumentException(
 					"The class to convert is null. Can't convert to a null type!");
 		}
-		log.debug("Trying to convert value ==" + value + "== of class: " + value.getClass() + ", to target Class ["
+		log.debug("Trying to convert value " + debug(value) + " of class: " + value.getClass() + ", to target Class ["
 				+ clazz + "]");
 		if (Collection.class.isAssignableFrom(clazz)) {
 			log.debug("This class [" + clazz.getSimpleName()
@@ -190,14 +225,14 @@ public class PropertyValueConverterUtil {
 				Collection colValue = (Collection) value;
 				if (!colValue.isEmpty()) {
 					value = colValue.iterator().next();
-					log.warn("Converted the collection element to: " + value);
+					log.warn("Converted the collection element to: " + debug(value));
 				}
 			}
-			log.debug("Converting [" + value + "] to [" + clazz + "]");
+			log.debug("Converting " + debug(value) + " to [" + clazz + "]");
 			Converter converter = ConvertUtils.lookup(clazz);
 			log.debug("Converter found: " + converter);
 			convertedValue = converter.convert(clazz, value);
-			log.debug("Converted value: " + convertedValue);
+			log.debug("Converted value: " + debug(convertedValue));
 			if (convertedValue != null) {
 				log.debug("ConvertedType: " + classFor(convertedValue));
 			}
@@ -214,8 +249,8 @@ public class PropertyValueConverterUtil {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Collection<?> valueListToCollection(Object value,
 			Class<? extends Collection> collectionType, Class<?> elementType) {
-		log.debug("The conversion from value [" + value
-				+ "] to the collection type [" + collectionType.getSimpleName()
+		log.debug("The conversion from value " + debug(value)
+				+ " to the collection type [" + collectionType.getSimpleName()
 				+ "] will result in elements of type ["
 				+ elementType.getSimpleName() + "]");
 		Collection elements = collectionUtil.newCollection(collectionType);

@@ -43,9 +43,13 @@ public class BeanPropertiesSetterTest {
 		when(manyToOneRelationPropertySetter.getFacade()).thenReturn(facade);
 
 		PropertySetter simpleSetter = new SimplePropertySetter();
+		PropertyValueConverterUtil converterUtil=  new PropertyValueConverterUtil();
+		((SimplePropertySetter) simpleSetter).setConverterUtil(converterUtil);
+
 		((AbstractJPAPropertySetter)simpleSetter).setRelationFacade(mock(PersistenceManager.class));
 		((AbstractJPAPropertySetter)simpleSetter).setFacade(mock(PersistenceManager.class));
 		factory.setSimplePropertySetter(simpleSetter);
+
 		PropertyRelationUtil relationUtil = new PropertyRelationUtil();
 		factory.setPropertyRelationUtil(relationUtil);
 		bps.setFactory(factory);

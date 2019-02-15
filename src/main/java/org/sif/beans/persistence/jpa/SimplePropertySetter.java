@@ -2,24 +2,39 @@ package org.sif.beans.persistence.jpa;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.sif.beans.PropertyValueConverterUtil;
+import org.sif.beans.converters.IgnoreConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
 import static org.sif.beans.Classes.classFor;
+import static org.sif.beans.Debugger.debug;
 
 @Named("SimplePropertySetter")
 public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	PropertyValueConverterUtil converterUtil;
+
+	public PropertyValueConverterUtil getConverterUtil() {
+		return converterUtil;
+	}
+
+	@Inject
+	public void setConverterUtil(PropertyValueConverterUtil converterUtil) {
+		this.converterUtil = converterUtil;
+	}
+
 	@Override
 	public T doSetProperty(T bean, String property, Object value) {
 		Object originalValue = value;
-		log.debug("Setting simple value on bean [" + bean + "]: " + originalValue);
+		log.debug("Setting property [" + property + "] simple value " + debug(value) + " on bean with class [" + bean.getClass().getSimpleName() + "]");
 		Class<?> propertyType = null;
 		try {
 			propertyType = PropertyUtils.getPropertyType(bean, property);
@@ -45,10 +60,15 @@ public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> 
 				}
 			}
 		}
-		log.debug("Setting converted value on bean [" + bean + "]: " + originalValue);
+		log.debug("Setting value " + debug(originalValue) + " on bean [" + bean + "]");
 		// Sets the converted value in the target property
 		try {
-			BeanUtils.setProperty(bean, property, originalValue);
+			Object converted = converterUtil.convert(bean.getClass(), property, originalValue);
+			log.debug("Setting Converted value: " + debug(converted));
+			BeanUtils.copyProperty(bean, property, converted);
+		} catch (IgnoreConversionException ex) {
+			// If this exception is throw then simply ignore it
+			log.debug("Conversion threw " + ex + ". Ignoring it!");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
