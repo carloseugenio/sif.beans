@@ -7,10 +7,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.sif.beans.converters.IgnoreEmptyConverter;
+import org.sif.beans.converters.SerializableConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -74,6 +76,9 @@ public class PropertyValueConverterUtil {
 		ConvertUtils.register(dateConverter, java.util.Date.class);
 		ConvertUtils.register(dateConverter, java.sql.Date.class);
 		ConvertUtils.register(dateConverter, Timestamp.class);
+
+		Converter serializableConverter = new SerializableConverter();
+		ConvertUtils.register(serializableConverter, Serializable.class);
 		//ConvertUtils.register(new CommonsDateConverter(), java.util.Date.class);
 		//ConvertUtils.register(new CommonsDateConverter(), java.sql.Date.class);
 		//ConvertUtils.register(new CommonsDateConverter(), java.sql.Timestamp.class);

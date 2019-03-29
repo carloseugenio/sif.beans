@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -56,6 +57,14 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test
+	public void convertSingleStringValueToSerializable() {
+		Serializable expected = "1";
+		String value = "1";
+		Object result = converterUtil.convert(Serializable.class, value);
+		assertEquals(expected, result);
+	}
+
+	@Test
 	public void convertStringListValueToLongList() {
 		List<Long> expected = Arrays.asList(1L, 2L);
 		List<String> value = Arrays.asList("1", "2");
@@ -78,5 +87,6 @@ public class PropertyValueConverterUtilTest {
 		Object result = converterUtil.asList(Long.class, value);
 		assertEquals(expected, result);
 	}
+
 
 }
