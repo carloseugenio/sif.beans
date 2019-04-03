@@ -4,18 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.sif.beans.persistence.jpa.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,7 +24,8 @@ public class BeanPropertiesSetterTest {
 	@Mock
 	ManyToOneRelationPropertySetter manyToOneRelationPropertySetter;
 
-	@Mock PersistenceManager facade;
+	@Mock
+	PersistenceManager facade;
 
 	PropertySetterFactory factory = spy(new PropertySetterFactory());
 
@@ -43,11 +40,11 @@ public class BeanPropertiesSetterTest {
 		when(manyToOneRelationPropertySetter.getFacade()).thenReturn(facade);
 
 		PropertySetter simpleSetter = new SimplePropertySetter();
-		PropertyValueConverterUtil converterUtil=  new PropertyValueConverterUtil();
+		PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
 		((SimplePropertySetter) simpleSetter).setConverterUtil(converterUtil);
 
-		((AbstractJPAPropertySetter)simpleSetter).setRelationFacade(mock(PersistenceManager.class));
-		((AbstractJPAPropertySetter)simpleSetter).setFacade(mock(PersistenceManager.class));
+		((AbstractJPAPropertySetter) simpleSetter).setRelationFacade(mock(PersistenceManager.class));
+		((AbstractJPAPropertySetter) simpleSetter).setFacade(mock(PersistenceManager.class));
 		factory.setSimplePropertySetter(simpleSetter);
 
 		PropertyRelationUtil relationUtil = new PropertyRelationUtil();
@@ -76,6 +73,49 @@ public class BeanPropertiesSetterTest {
 	}
 
 	@Test
+	public void testNamePropertySetToNull() {
+		addParameter("name", null);
+		bps.setAllProperties(bean, parameters);
+		assertNull(bean.getName());
+	}
+
+
+	@Test
+	public void testNamePropertySetToEmpty() {
+		addParameter("name", "");
+		bps.setAllProperties(bean, parameters);
+		assertEquals("", bean.getName());
+	}
+
+	@Test
+	public void testSetPropertiesIgnoreProperty() {
+		String name = "NameTest";
+		String originalName = bean.getName();
+		addParameter("name", name);
+		addParameter(BeanPropertiesSetter.IGNORE_PROPERTY, "name");
+		bps.setAllProperties(bean, parameters);
+		assertEquals(originalName, bean.getName());
+	}
+
+	@Test
+	public void testSetPropertiesIgnorePropertyIfEmpty() {
+		String originalName = bean.getName();
+		addParameter("name", "");
+		addParameter(BeanPropertiesSetter.IGNORE_EMPTY_PROPERTY, "name");
+		bps.setAllProperties(bean, parameters);
+		assertEquals(originalName, bean.getName());
+	}
+
+	@Test
+	public void testSetPropertiesIgnorePropertyIfNull() {
+		String originalName = bean.getName();
+		addParameter("name", null);
+		addParameter(BeanPropertiesSetter.IGNORE_EMPTY_PROPERTY, "name");
+		bps.setAllProperties(bean, parameters);
+		assertEquals(originalName, bean.getName());
+	}
+
+	@Test
 	public void testRelationPropertySet() {
 		Employee employee = new Employee();
 		Department department = new Department();
@@ -99,6 +139,7 @@ public class BeanPropertiesSetterTest {
 		verify(this.manyToOneRelationPropertySetter,
 				times(1)).unsetProperty(employee, "department", 1);
 	}
+
 
 }
 

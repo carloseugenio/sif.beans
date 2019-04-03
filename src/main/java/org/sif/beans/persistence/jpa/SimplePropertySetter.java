@@ -42,7 +42,9 @@ public class SimplePropertySetter<T, I> extends AbstractJPAPropertySetter<T, I> 
 			throw new RuntimeException(e);
 		}
 		log.debug("Target property type on bean: " + propertyType);
-		if (classFor(originalValue).isArray() && propertyType.isArray()) {
+		if (originalValue == null) {
+			setPropertyDirectly(bean, property, null);
+		} else  if (classFor(originalValue).isArray() && propertyType.isArray()) {
 			log.debug("The value[" + originalValue + "] and target properties are arrays. Setting directly...");
 			setPropertyDirectly(bean, property, originalValue);
 			return bean;

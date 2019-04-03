@@ -25,9 +25,8 @@ import static org.sif.beans.Debugger.debug;
  * <b>Important:</b> This class methods are not suitable for converting
  * collection values or collection properties. Use {@link CollectionUtil}
  * instead.
- * 
+ *
  * @author Carlos Eugenio P. da Purificacao
- * 
  */
 @Named
 public class PropertyValueConverterUtil {
@@ -38,8 +37,7 @@ public class PropertyValueConverterUtil {
 
 	/**
 	 * Register converters without using the default value
-	 */
-	{
+	 */ {
 		registerConverters();
 	}
 
@@ -86,8 +84,9 @@ public class PropertyValueConverterUtil {
 
 	/**
 	 * Converts the given value to the correct list type
+	 *
 	 * @param listType the result list type
-	 * @param value the value to convert
+	 * @param value    the value to convert
 	 * @return as list of the given type with the given elements
 	 */
 	public List<?> asList(Class<?> listType, Object value) {
@@ -145,7 +144,7 @@ public class PropertyValueConverterUtil {
 	 * Converts all elements of provided collection to the provided element
 	 * type.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private Collection<?> convertAll(Class<?> elementType, Collection<?> values) {
 		log.debug("Converting all values " + values + ", to type: "
 				+ elementType);
@@ -161,9 +160,9 @@ public class PropertyValueConverterUtil {
 	 * with commas, to a Collection of collectionType with elements of
 	 * elementType.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private Collection stringArrayToCollection(String value,
-			Class<? extends Collection> collectionType, Class<?> elementType) {
+											   Class<? extends Collection> collectionType, Class<?> elementType) {
 		Collection collection = collectionUtil.newCollection(collectionType);
 		log.debug("Created new collection instance: "
 				+ classFor(collection).getSimpleName());
@@ -197,20 +196,21 @@ public class PropertyValueConverterUtil {
 	/**
 	 * Converts the value to the provided class. The value will be first
 	 * transformed into a String then the conversion is attempted.
-	 * 
-	 * @param clazz
-	 *            the type to convert the value to
-	 * @param value
-	 *            the value to convert
+	 *
+	 * @param clazz the type to convert the value to
+	 * @param value the value to convert
 	 * @return the value converted to the expected type
-	 * @throws Exception
-	 *             if an error occurs in the conversion process.
+	 * @throws Exception if an error occurs in the conversion process.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Object convert(Class<?> clazz, Object value) {
 		if (clazz == null) {
 			throw new IllegalArgumentException(
 					"The class to convert is null. Can't convert to a null type!");
+		}
+		if (value == null) {
+			log.debug("Value is null. No conversion!");
+			return null;
 		}
 		log.debug("Trying to convert value " + debug(value) + " of class: " + value.getClass() + ", to target Class ["
 				+ clazz + "]");
@@ -251,9 +251,9 @@ public class PropertyValueConverterUtil {
 	 * of values to the provided collection class, whose elements will be of
 	 * provided type.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Collection<?> valueListToCollection(Object value,
-			Class<? extends Collection> collectionType, Class<?> elementType) {
+											   Class<? extends Collection> collectionType, Class<?> elementType) {
 		log.debug("The conversion from value " + debug(value)
 				+ " to the collection type [" + collectionType.getSimpleName()
 				+ "] will result in elements of type ["

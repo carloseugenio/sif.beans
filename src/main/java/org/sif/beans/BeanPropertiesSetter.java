@@ -1,12 +1,16 @@
 package org.sif.beans;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 
@@ -29,7 +33,9 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 
 	Logger log = LoggerFactory.getLogger(BeanPropertiesSetter.class);
 
+	public static final String IGNORE_EMPTY_PROPERTY = "org.sif.beans.ignore.empty";
 	public static final String DISSOCIATE_PREFIX = "dissociate-";
+	public static final String IGNORE_PROPERTY = "org.sif.beans.ignore";
 
 	private PropertySetterFactory<T, I> factory;
 
@@ -55,8 +61,30 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 	@Override
 	public void setAllProperties(T bean, Map<String, Object> parameters) {
 		log.debug("Setting all properties with parameters: " + parameters);
+		// Filter the ignore properties
+		final List<String> ignoreList = new ArrayList<>();
+		for(String param : parameters.keySet()) {
+			if (IGNORE_PROPERTY.equals(param)) {
+				ignoreList.add(parameters.get(param).toString());
+			}
+			if (IGNORE_EMPTY_PROPERTY.equals(param)) {
+				// Check if it is empty
+				String ignorePropertyName = (String) parameters.get(param);
+				Object value = parameters.get(ignorePropertyName);
+				if (value == null ||
+						(value instanceof String && StringUtils.isEmpty(value.toString()))) {
+					// Ignore empty will ignore nulls
+					ignoreList.add(ignorePropertyName);
+				}
+			}
+		}
 		// For each key in the parameters map
 		for (String property : parameters.keySet()) {
+			// If the ignore property was defined for this property then skip it
+			if (ignoreList.contains(property)) {
+				log.debug("Ignoring property [" + property + "]");
+				continue;
+			}
 			// First get the parameter value before any modifications
 			Object parameterValue = parameters.get(property);
 			log.debug("Handling property: [" + property + "] with value: [" + parameterValue + "]");
@@ -68,7 +96,6 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 				dissociate = true;
 				log.debug("Found DISSOCIATE PREFIX. Property to unset: " + property);
 			}
-			//BeanUtilsBean2.getInstance().getProperty(bean, property);
 			if (!PropertyUtils.isReadable(bean, property)) {
 				log.warn("The property [" + property + "] is not readable on bean [" + bean + "]");
 				continue;
