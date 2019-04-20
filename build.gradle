@@ -51,12 +51,6 @@ dependencies {
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
-	// Logging configuration
-	// This dependency is exported to consumers, that is to say found on their compile classpath.
-	//testRuntime 'org.apache.logging.log4j:log4j-api:2.8'
-	//testRuntime 'org.apache.logging.log4j:log4j-core:2.8'
-	//testRuntime 'org.apache.logging.log4j:log4j-slf4j-impl:2.8'
-
     testRuntime group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
     testRuntime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
     testRuntime group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.2'
