@@ -3,6 +3,7 @@ package org.sif.beans;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -113,5 +114,23 @@ public class Employee implements Serializable {
 
 	public void setEmployed(Boolean employed) {
 		this.employed = employed;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Employee employee = (Employee) o;
+		return Objects.equals(id, employee.id) && Objects.equals(department, employee.department) && Objects
+				.equals(name, employee.name) && Objects.equals(age, employee.age) && Objects
+				.equals(friends, employee.friends) && Objects.equals(coordinator, employee.coordinator) && Objects
+				.equals(employed, employee.employed);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, department, name, age, friends, coordinator, employed);
 	}
 }
