@@ -19,6 +19,13 @@ public class Classes {
 		return obj.getClass();
 	}
 
+	public static <T> Class<T> typeFor(Object obj) {
+		if (obj == null) {
+			return null;
+		}
+		return (Class<T>) obj.getClass();
+	}
+
 	/**
 	 * Returns the type of a field in the target bean class. This method will
 	 * recurse to supper classes.

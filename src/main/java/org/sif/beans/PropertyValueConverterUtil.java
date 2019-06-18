@@ -29,11 +29,11 @@ import static org.sif.beans.Debugger.debug;
  * @author Carlos Eugenio P. da Purificacao
  */
 @Named
-public class PropertyValueConverterUtil {
+public class PropertyValueConverterUtil<T> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	CollectionUtil collectionUtil = new CollectionUtil();
+
 
 	/**
 	 * Register converters without using the default value
@@ -89,12 +89,12 @@ public class PropertyValueConverterUtil {
 	 * @param value    the value to convert
 	 * @return as list of the given type with the given elements
 	 */
-	public List<?> asList(Class<?> listType, Object value) {
+	public List<T> asList(Class<T> listType, Object value) {
 		log.debug("Converting value " + debug(value) + " of class: "
 				+ classFor(value).getSimpleName() + ", to a List of type: " + listType + " ...");
 		log.debug("Converting to List...");
 		// The given object is an array.
-		List<?> resultingList = (List<?>) valueListToCollection(value, List.class, listType);
+		List<T> resultingList = (List<T>) valueListToCollection(value, List.class, listType);
 		log.debug("The resultingList class from Arrays.asList: "
 				+ classFor(resultingList).getSimpleName());
 		log.debug("The resulting list values: " + resultingList);
@@ -112,7 +112,7 @@ public class PropertyValueConverterUtil {
 		log.debug("Converting the array of class: "
 				+ classFor(value).getSimpleName() + " to a collection...");
 		if (Object[].class.isAssignableFrom(classFor(value))) {
-			List<?> resultingList = Arrays.asList((Object[]) value);
+			List<T> resultingList = Arrays.asList((T[]) value);
 			log.debug("The resultingList class from Arrays.asList: "
 					+ classFor(resultingList).getSimpleName());
 			log.debug("The resulting list values: " + resultingList);
@@ -163,6 +163,7 @@ public class PropertyValueConverterUtil {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private Collection stringArrayToCollection(String value,
 											   Class<? extends Collection> collectionType, Class<?> elementType) {
+		CollectionUtil collectionUtil = new CollectionUtil();
 		Collection collection = collectionUtil.newCollection(collectionType);
 		log.debug("Created new collection instance: "
 				+ classFor(collection).getSimpleName());
@@ -258,6 +259,7 @@ public class PropertyValueConverterUtil {
 				+ " to the collection type [" + collectionType.getSimpleName()
 				+ "] will result in elements of type ["
 				+ elementType.getSimpleName() + "]");
+		CollectionUtil collectionUtil = new CollectionUtil();
 		Collection elements = collectionUtil.newCollection(collectionType);
 		log.debug("Created new Collection instance of class: "
 				+ classFor(elements).getSimpleName());
@@ -277,7 +279,8 @@ public class PropertyValueConverterUtil {
 			log.debug("The stirng list was converted to: "
 					+ stringArrayAsTypeCollection);
 			elements.addAll(stringArrayAsTypeCollection);
-		} else if (value != null & Number.class.isAssignableFrom(elementType) & NumberUtils.isCreatable(value.toString())) {
+		} else if (value != null) {
+			// & Number.class.isAssignableFrom(elementType) & NumberUtils.isCreatable(value.toString())) {
 			log.debug("The value is a single element convertable to a Number!");
 			elements.add(convert(elementType, value));
 		}

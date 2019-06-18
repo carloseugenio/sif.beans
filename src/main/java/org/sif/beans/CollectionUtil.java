@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 
+import static org.sif.beans.Classes.classFor;
+import static org.sif.beans.Classes.typeFor;
+import static org.sif.beans.Debugger.debug;
+
 /**
  * Contains utility methods for handling collection of values
  * 
@@ -20,7 +24,7 @@ import javax.inject.Named;
  */
 @SuppressWarnings("unused")
 @Named
-public class CollectionUtil {
+public class CollectionUtil<T> {
 
 	Logger log = LoggerFactory.getLogger(CollectionUtil.class);
 
@@ -164,4 +168,20 @@ public class CollectionUtil {
 		}
 	}
 
+	public List<T> toCollection(Object value) {
+		if (value == null) {
+			return Collections.emptyList();
+		}
+		Class<?> collectionType = List.class;
+		Class<?> elementType = typeFor(value);
+		log.debug("Converting value " + debug(value) + " of class: "
+				+ classFor(value).getSimpleName() + ", to a " + collectionType.getSimpleName() + " of type: " +
+				elementType + " ...");
+		PropertyValueConverterUtil<T> converterUtil = new PropertyValueConverterUtil();
+		if (elementType.isArray() || elementType.isAssignableFrom(Collection.class)) {
+			log.debug("The provided type for value is an Array or Collection. The result Collection will be of Strings!");
+			elementType = String.class;
+		}
+		return converterUtil.asList((Class<T>) elementType, value);
+	}
 }
