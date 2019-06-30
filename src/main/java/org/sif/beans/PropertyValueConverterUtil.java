@@ -83,18 +83,19 @@ public class PropertyValueConverterUtil<T> {
 	}
 
 	/**
-	 * Converts the given value to the correct list type
+	 * Converts the given value to the correct list having elements of the
+	 * given element type
 	 *
-	 * @param listType the result list type
+	 * @param elementType the result list element type
 	 * @param value    the value to convert
 	 * @return as list of the given type with the given elements
 	 */
-	public List<T> asList(Class<T> listType, Object value) {
+	public List<T> asList(Class<T> elementType, Object value) {
 		log.debug("Converting value " + debug(value) + " of class: "
-				+ classFor(value).getSimpleName() + ", to a List of type: " + listType + " ...");
+				+ classFor(value).getSimpleName() + ", to a List of type: " + elementType + " ...");
 		log.debug("Converting to List...");
 		// The given object is an array.
-		List<T> resultingList = (List<T>) valueListToCollection(value, List.class, listType);
+		List<T> resultingList = (List<T>) valueListToCollection(value, List.class, elementType);
 		log.debug("The resultingList class from Arrays.asList: "
 				+ classFor(resultingList).getSimpleName());
 		log.debug("The resulting list values: " + resultingList);

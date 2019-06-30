@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -25,10 +23,32 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test
+	public void intArrayAsSet() {
+		Object array = new int[]{1, 2};
+		Set<Integer> expected = new HashSet(Arrays.asList(1, 2));
+		assertEquals(expected, converterUtil.valueListToCollection(array, Set.class, Integer.class));
+	}
+
+	@Test
+	public void intArrayAsSetUniqueValues() {
+		Object array = new int[]{1, 2, 2, 1};
+		Set<Integer> expected = new HashSet(Arrays.asList(1, 2));
+		assertEquals(expected, converterUtil.valueListToCollection(array, Set.class, Integer.class));
+	}
+
+	@Test
 	public void stringArrayAsList() {
 		String[] array = new String[]{"1", "2"};
 		List<String> expected = Arrays.asList("1", "2");
 		Collection<?> result = converterUtil.asList(array);
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void stringArrayAsSet() {
+		String[] array = new String[]{"1", "2", "2", "1"};
+		Set<String> expected = new HashSet(Arrays.asList("1", "2"));
+		Collection<?> result = converterUtil.valueListToCollection(array, Set.class, String.class);
 		assertEquals(expected, result);
 	}
 
@@ -87,6 +107,5 @@ public class PropertyValueConverterUtilTest {
 		Object result = converterUtil.asList(Long.class, value);
 		assertEquals(expected, result);
 	}
-
 
 }

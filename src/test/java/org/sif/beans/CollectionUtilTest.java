@@ -54,7 +54,7 @@ public class CollectionUtilTest {
 
 	@Test
 	public void testToCollectionEmptyString() {
-		assertEquals(0, collectionUtil.toCollection("").size());
+		assertEquals(1, collectionUtil.toCollection("").size());
 	}
 
 	@Test
@@ -78,38 +78,6 @@ public class CollectionUtilTest {
 	@Test(expected = ConversionException.class)
 	public void getFirstCollectionElementWrongTypeForArray() {
 		collectionUtil.getFirstCollectionElement(stringArrayCollection, Integer.class);
-	}
-
-	@Test
-	public void isRawCollection() {
-	}
-
-	@Test
-	public void isArrayCollection() {
-	}
-
-	@Test
-	public void isStringCommaSeparatedNumberArray() {
-	}
-
-	@Test
-	public void isStringCommaSeparatedArray() {
-	}
-
-	@Test
-	public void isCollection() {
-	}
-
-	@Test
-	public void isCollectionOfAnyType() {
-	}
-
-	@Test
-	public void isEmpty() {
-	}
-
-	@Test
-	public void newCollection() {
 	}
 
 }
