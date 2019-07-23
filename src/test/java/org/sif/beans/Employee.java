@@ -44,8 +44,8 @@ public class Employee implements Serializable {
 	@OneToMany(targetEntity=Employee.class)
 	private Set<Employee> friends = new HashSet<>();
 
-	@OneToMany(targetEntity=Department.class)
-	private Set<Department> coordinator = new HashSet<>();
+	@OneToMany(mappedBy="coordinator", targetEntity=Department.class)
+	private Set<Department> departments = new HashSet<>();
 
 	@Basic(optional = true)
 	private Boolean employed;
@@ -92,12 +92,12 @@ public class Employee implements Serializable {
 		this.friends = friends;
 	}
 
-	public Set<Department> getCoordinator() {
-		return coordinator;
+	public Set<Department> getDepartments() {
+		return departments;
 	}
 
-	public void setCoordinator(Set<Department> coordinator) {
-		this.coordinator = coordinator;
+	public void setDepartments(Set<Department> departments) {
+		this.departments = departments;
 	}
 
 	@Override
@@ -125,12 +125,12 @@ public class Employee implements Serializable {
 		Employee employee = (Employee) o;
 		return Objects.equals(id, employee.id) && Objects.equals(department, employee.department) && Objects
 				.equals(name, employee.name) && Objects.equals(age, employee.age) && Objects
-				.equals(friends, employee.friends) && Objects.equals(coordinator, employee.coordinator) && Objects
+				.equals(friends, employee.friends) && Objects.equals(departments, employee.departments) && Objects
 				.equals(employed, employee.employed);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, department, name, age, friends, coordinator, employed);
+		return Objects.hash(id, department, name, age, friends, departments, employed);
 	}
 }

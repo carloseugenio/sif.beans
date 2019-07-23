@@ -23,6 +23,9 @@ public class Department implements Serializable {
 	@OneToMany(targetEntity = Employee.class)
 	private Set<Employee> employeelist = new HashSet<>();
 
+	@ManyToOne
+	private Employee coordinator;
+
 	private String name;
 
 	public Long getId() {
@@ -73,5 +76,13 @@ public class Department implements Serializable {
 
 	public void setEmployeelist(Set<Employee> employeelist) {
 		this.employeelist = employeelist;
+	}
+
+	public Employee getCoordinator() {
+		return coordinator;
+	}
+
+	public void setCoordinator(Employee coordinator) {
+		this.coordinator = coordinator;
 	}
 }

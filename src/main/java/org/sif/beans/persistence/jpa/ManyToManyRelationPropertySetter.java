@@ -92,6 +92,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 					+ value
 					+ "] is a collection. Using the facade to retrieve elements from persistence storage...");
 			List<?> loaded = getRelationFacade().findByField(primaryKeyField, value);
+			log.debug("Loaded: " + loaded.size());
 			collectionValue.addAll(loaded);
 			log.debug("All Values added to the collection!");
 		} else {

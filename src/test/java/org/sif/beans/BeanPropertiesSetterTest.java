@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sif.beans.persistence.jpa.*;
 
@@ -24,6 +25,9 @@ public class BeanPropertiesSetterTest {
 	@Mock
 	ManyToOneRelationPropertySetter manyToOneRelationPropertySetter;
 
+	@Spy
+	ManyToManyRelationPropertySetter manyToManyRelationPropertySetter;
+
 	@Mock
 	PersistenceManager facade;
 
@@ -37,7 +41,10 @@ public class BeanPropertiesSetterTest {
 	public void setup() {
 
 		factory.setManyToOneRelationSetter(manyToOneRelationPropertySetter);
+		factory.setManyToManyRelationSetter(manyToManyRelationPropertySetter);
+
 		when(manyToOneRelationPropertySetter.getFacade()).thenReturn(facade);
+		when(manyToManyRelationPropertySetter.getFacade()).thenReturn(facade);
 
 		PropertySetter simpleSetter = new SimplePropertySetter();
 		PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
@@ -120,12 +127,26 @@ public class BeanPropertiesSetterTest {
 		Employee employee = new Employee();
 		Department department = new Department();
 
-
 		addParameter("department", department);
 
 		bps.setAllProperties(employee, parameters);
 
 		verify(this.manyToOneRelationPropertySetter, times(1)).doSetProperty(employee, "department", department);
+	}
+
+	@Test
+	public void testRelationCollectionPropertySet() {
+		Employee employee = new Employee();
+		Department department1 = new Department();
+		department1.setId(1L);
+		Department department2 = new Department();
+		department2.setId(2L);
+		String ids = department1.getId() + "," + department2.getId();
+		addParameter("departments", ids);
+
+		bps.setAllProperties(employee, parameters);
+
+		verify(this.manyToManyRelationPropertySetter, times(1)).doSetProperty(employee, "departments", ids);
 	}
 
 	@Test
