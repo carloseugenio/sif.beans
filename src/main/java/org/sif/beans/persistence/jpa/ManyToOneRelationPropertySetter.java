@@ -34,12 +34,6 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	@Inject
-	CollectionUtil collectionUtil;
-
-	@Inject
-	PropertyValueConverterUtil converterUtil;
-
 	@Override
 	public T doSetProperty(T bean, String property, Object value) {
 		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(

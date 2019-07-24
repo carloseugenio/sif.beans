@@ -17,6 +17,8 @@ public class PropertySetterFactory<T, I> {
 
 	private PropertySetter<T, I> manyToManyRelationSetter;
 
+	private PropertySetter<T, I> oneToManyRelationSetter;
+
 	private PropertySetter<T, I> simplePropertySetter;
 
 	private PropertyRelationUtil propertyRelationUtil;
@@ -31,6 +33,12 @@ public class PropertySetterFactory<T, I> {
 	@Named("ManyToManyRelationPropertySetter")
 	public void setManyToManyRelationSetter(PropertySetter<T, I> manyToManyRelationSetter) {
 		this.manyToManyRelationSetter = manyToManyRelationSetter;
+	}
+
+	@Inject
+	@Named("OneToManyRelationPropertySetter")
+	public void setOneToManyRelationSetter(PropertySetter<T, I> oneToManyRelationSetter) {
+		this.oneToManyRelationSetter = oneToManyRelationSetter;
 	}
 
 	@Inject
@@ -61,7 +69,7 @@ public class PropertySetterFactory<T, I> {
 				setter = manyToManyRelationSetter;
 			} else if (propertyRelationUtil.isOneToManyRelation(
 					classFor(bean), property)) {
-				setter = manyToManyRelationSetter;
+				setter = oneToManyRelationSetter;
 			}
 			log.debug("Setter found: " + setter);
 			if (setter == null) {

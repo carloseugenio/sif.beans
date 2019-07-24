@@ -1,6 +1,8 @@
 package org.sif.beans.persistence.jpa;
 
+import org.sif.beans.CollectionUtil;
 import org.sif.beans.PropertySetter;
+import org.sif.beans.PropertyValueConverterUtil;
 
 import javax.inject.Inject;
 
@@ -26,6 +28,10 @@ public abstract class AbstractJPAPropertySetter<T, I> implements
 
 	@SuppressWarnings("rawtypes")
 	private	PersistenceManager relationFacade;
+
+	CollectionUtil collectionUtil = new CollectionUtil();
+
+	PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
 
 	@SuppressWarnings("unchecked")
 	@Override

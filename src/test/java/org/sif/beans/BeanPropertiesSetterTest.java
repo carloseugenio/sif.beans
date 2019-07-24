@@ -135,21 +135,6 @@ public class BeanPropertiesSetterTest {
 	}
 
 	@Test
-	public void testRelationCollectionPropertySet() {
-		Employee employee = new Employee();
-		Department department1 = new Department();
-		department1.setId(1L);
-		Department department2 = new Department();
-		department2.setId(2L);
-		String ids = department1.getId() + "," + department2.getId();
-		addParameter("departments", ids);
-
-		bps.setAllProperties(employee, parameters);
-
-		verify(this.manyToManyRelationPropertySetter, times(1)).doSetProperty(employee, "departments", ids);
-	}
-
-	@Test
 	public void testRelationPropertyUnSet() {
 		Employee employee = new Employee();
 
