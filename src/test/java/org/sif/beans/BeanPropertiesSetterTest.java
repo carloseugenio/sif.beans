@@ -28,6 +28,9 @@ public class BeanPropertiesSetterTest {
 	@Spy
 	ManyToManyRelationPropertySetter manyToManyRelationPropertySetter;
 
+	@Spy
+	OneToManyRelationPropertySetter oneToManyRelationPropertySetter;
+
 	@Mock
 	PersistenceManager facade;
 
@@ -42,9 +45,11 @@ public class BeanPropertiesSetterTest {
 
 		factory.setManyToOneRelationSetter(manyToOneRelationPropertySetter);
 		factory.setManyToManyRelationSetter(manyToManyRelationPropertySetter);
+		factory.setOneToManyRelationSetter(oneToManyRelationPropertySetter);
 
 		when(manyToOneRelationPropertySetter.getFacade()).thenReturn(facade);
 		when(manyToManyRelationPropertySetter.getFacade()).thenReturn(facade);
+		when(oneToManyRelationPropertySetter.getFacade()).thenReturn(facade);
 
 		PropertySetter simpleSetter = new SimplePropertySetter();
 		PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
@@ -145,7 +150,6 @@ public class BeanPropertiesSetterTest {
 		verify(this.manyToOneRelationPropertySetter,
 				times(1)).unsetProperty(employee, "department", 1);
 	}
-
 
 }
 

@@ -143,8 +143,10 @@ public class OneToManyRelationPropertySetter<T, I> extends AbstractJPAPropertySe
 				+ "]");
 		boolean isManyToMany = AnnotationUtil.fieldHasAnnotation(
 				classFor(bean), property, ManyToMany.class);
-		if (isManyToMany) {
-			// This is a many to many annotation. Handler should get the related
+		boolean isOneToMany = AnnotationUtil.fieldHasAnnotation(
+				classFor(bean), property, OneToMany.class);
+		if (isManyToMany || isOneToMany) {
+			// This is a one to many or many to many annotation. Handler should get the related
 			// entity from repository and set it on the bean field
 			handleManyToManyRemoveRelation(bean, property, value);
 		} else {
@@ -183,6 +185,13 @@ public class OneToManyRelationPropertySetter<T, I> extends AbstractJPAPropertySe
 		@SuppressWarnings("rawtypes")
 		Collection collectionValue = (Collection) fieldValue;
 		log.debug("Current collection values on bean: " + collectionValue);
+
+		// Get the annotation
+		OneToMany oneToMany =
+				(OneToMany) AnnotationUtil.getAnnotationForField(bean.getClass(), property, OneToMany.class);
+
+		boolean isBidirectional = oneToMany.mappedBy().length() > 0;
+
 		if (collectionUtil.isCollection(value)) {
 			// If the value is a collection, get all values in one query
 			log.debug("The value ["
@@ -192,6 +201,16 @@ public class OneToManyRelationPropertySetter<T, I> extends AbstractJPAPropertySe
 			collectionValue.removeAll(loaded);
 			log.debug("All Values removed from collection!");
 			log.debug("New collection value: " + collectionValue);
+			if (isBidirectional) {
+				manyToOneSetter.setRelationFacade(this.getRelationFacade());
+				log.debug("The relation is bidirectional, setting the many-to-one side of each...");
+				try {
+					Long beanId = (Long) PropertyUtils.getProperty(bean, primaryKeyField);
+					loaded.stream().forEach(ret-> manyToOneSetter.unsetProperty(ret, oneToMany.mappedBy(), beanId));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 		} else {
 			log.debug("Converting value [" + value + "] of class ["
 					+ relationBeanClass + "] to the primarykey field type...");
@@ -206,8 +225,13 @@ public class OneToManyRelationPropertySetter<T, I> extends AbstractJPAPropertySe
 			log.debug("Loaded: " + loaded);
 			// Adds the loaded entity on the collection field
 			collectionValue.remove(loaded);
-			log.debug("Value removed to the collection!");
+			log.debug("Value removed from the collection!");
 			log.debug("New collection value: " + collectionValue);
+			if (isBidirectional) {
+				manyToOneSetter.setRelationFacade(this.getRelationFacade());
+				log.debug("The relation is bidirectional, setting the many-to-one side of: " + loaded);
+				manyToOneSetter.unsetProperty(loaded, oneToMany.mappedBy(), value);
+			}
 		}
 	}
 

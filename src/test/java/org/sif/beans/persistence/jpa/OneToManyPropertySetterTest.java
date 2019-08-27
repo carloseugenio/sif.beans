@@ -5,10 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.sif.beans.CollectionUtil;
-import org.sif.beans.Department;
-import org.sif.beans.Employee;
-import org.sif.beans.PropertyValueConverterUtil;
+import org.sif.beans.*;
 
 import java.util.Arrays;
 
@@ -56,6 +53,14 @@ public class OneToManyPropertySetterTest {
 		doReturn(Arrays.asList(bean)).when(relationFacade).findByField("id", 1L);
 		setter.collectionUtil = new CollectionUtil();
 	}
+
+	@Test
+	public void testUnSetOneManyWithOneElementUnidirectional() {
+		bean.getFriends().add(friend1);
+		setter.unsetProperty(bean, "friends", friend1.getId());
+		assertEquals(0, bean.getFriends().size());
+	}
+
 
 	@Test
 	public void testSetOneManyWithOneElementUnidirectional() {
