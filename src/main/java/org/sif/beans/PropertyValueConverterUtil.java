@@ -93,10 +93,6 @@ public class PropertyValueConverterUtil<T> {
 	 * @return as list of the given type with the given elements
 	 */
 	public List<T> asList(Class<T> elementType, Object value) {
-		if (List.class.isAssignableFrom(classFor(value))) {
-			log.debug("The given value {} is already a list! Returning...", value);
-			return (List<T>) value;
-		}
 		log.debug("Converting value {} of class: {}, to a List of type: {} ...", debug(value), classFor(value).getSimpleName(), elementType);
 		log.debug("Converting to List...");
 		// The given object is an array.
@@ -221,9 +217,15 @@ public class PropertyValueConverterUtil<T> {
 				debug(value), value.getClass(), clazz);
 		if (Collection.class.isAssignableFrom(clazz)) {
 			log.debug("This class [{}] is a collection! Using valueToCollection ...", clazz.getSimpleName());
+			Collection col = (Collection) value;
 			// TODO: Why Integer? Why not Number?
+			Class<?> targetType = Integer.class;
+			if (!col.isEmpty()) {
+				// Try to infer the type
+				targetType = col.iterator().next().getClass();
+			}
 			return valueListToCollection(value,
-					(Class<? extends Collection>) clazz, Integer.class);
+					(Class<? extends Collection>) clazz, targetType);
 		}
 		Object convertedValue = null;
 		if (value != null) {

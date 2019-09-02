@@ -178,7 +178,7 @@ public class CollectionUtil<T> {
 				+ classFor(value).getSimpleName() + ", to a " + collectionType.getSimpleName() + " of type: " +
 				elementType + " ...");
 		PropertyValueConverterUtil<T> converterUtil = new PropertyValueConverterUtil();
-		if (elementType.isArray() || elementType.isAssignableFrom(Collection.class)) {
+		if (elementType.isArray() || Collection.class.isAssignableFrom(elementType)) {
 			log.debug("The provided type for value is an Array or Collection. The result Collection will be of Strings!");
 			elementType = String.class;
 		}
