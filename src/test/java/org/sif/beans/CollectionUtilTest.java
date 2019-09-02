@@ -3,10 +3,14 @@ package org.sif.beans;
 import org.apache.commons.beanutils.ConversionException;
 import org.junit.Test;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -92,8 +96,8 @@ public class CollectionUtilTest {
 	}
 
 	@Test
-	public void testIsEmptyWithEmptyString() {
-		assertTrue(collectionUtil.isEmpty(""));
+	public void testIsNotEmptyWithEmptyString() {
+		assertFalse(collectionUtil.isEmpty(""));
 	}
 
 	@Test
@@ -109,5 +113,28 @@ public class CollectionUtilTest {
 	@Test
 	public void testNotEmptyWithList() {
 		assertFalse(collectionUtil.isEmpty(Arrays.asList("b")));
+	}
+
+	@Test
+	public void testNewCollection() {
+		assertEquals(ArrayList.class, collectionUtil.newCollection(List.class).getClass());
+		assertEquals(ArrayList.class, collectionUtil.newCollection(ArrayList.class).getClass());
+		assertEquals(HashSet.class, collectionUtil.newCollection(Set.class).getClass());
+		assertEquals(HashSet.class, collectionUtil.newCollection(HashSet.class).getClass());
+		// Custom implementations
+		assertEquals(ArrayList.class, collectionUtil.newCollection(TestList.class).getClass());
+	}
+}
+
+class TestList extends AbstractList {
+
+	@Override
+	public Object get(int index) {
+		return null;
+	}
+
+	@Override
+	public int size() {
+		return 0;
 	}
 }

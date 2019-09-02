@@ -148,12 +148,21 @@ public class CollectionUtil<T> {
 		collectionImplementations.put(HashSet.class, HashSet.class);
 		collectionImplementations.put(List.class, ArrayList.class);
 		collectionImplementations.put(ArrayList.class, ArrayList.class);
+		collectionImplementations.put(AbstractList.class, ArrayList.class);
+	}
+
+	private Class<?> implementation(Class<?> type) {
+		Optional<Class<?>> implementationKey = collectionImplementations.keySet().stream()
+				.filter(it -> it.isAssignableFrom(type)).findFirst();
+		if (!implementationKey.isPresent()) {
+			throw new IllegalArgumentException("Couldn't find a collection implementation for: " + type);
+		}
+		return collectionImplementations.get(implementationKey.get());
 	}
 
 	public Collection<?> newCollection(Class<?> collectionType) {
 		try {
-			return (Collection<?>) collectionImplementations.get(collectionType)
-					.newInstance();
+			return (Collection<?>) implementation(collectionType).newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

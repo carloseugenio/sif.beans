@@ -93,14 +93,16 @@ public class PropertyValueConverterUtil<T> {
 	 * @return as list of the given type with the given elements
 	 */
 	public List<T> asList(Class<T> elementType, Object value) {
-		log.debug("Converting value " + debug(value) + " of class: "
-				+ classFor(value).getSimpleName() + ", to a List of type: " + elementType + " ...");
+		if (List.class.isAssignableFrom(classFor(value))) {
+			log.debug("The given value {} is already a list! Returning...", value);
+			return (List<T>) value;
+		}
+		log.debug("Converting value {} of class: {}, to a List of type: {} ...", debug(value), classFor(value).getSimpleName(), elementType);
 		log.debug("Converting to List...");
 		// The given object is an array.
 		List<T> resultingList = (List<T>) valueListToCollection(value, List.class, elementType);
-		log.debug("The resultingList class from Arrays.asList: "
-				+ classFor(resultingList).getSimpleName());
-		log.debug("The resulting list values: " + resultingList);
+		log.debug("The resultingList class from Arrays.asList: {}", classFor(resultingList).getSimpleName());
+		log.debug("The resulting list with size({}) values: {}", resultingList.size(), resultingList);
 		return resultingList;
 	}
 
@@ -118,7 +120,7 @@ public class PropertyValueConverterUtil<T> {
 			List<T> resultingList = Arrays.asList((T[]) value);
 			log.debug("The resultingList class from Arrays.asList: "
 					+ classFor(resultingList).getSimpleName());
-			log.debug("The resulting list values: " + resultingList);
+			log.debug("The resulting list with size({}) values: {}", resultingList.size(), resultingList);
 			return resultingList;
 		}
 		if (isPrimitiveArrayType(classFor(value))) {
@@ -131,8 +133,7 @@ public class PropertyValueConverterUtil<T> {
 				Integer[] integerResultingList = ArrayUtils.toObject(intArray);
 				List<Integer> resultingList = Arrays
 						.asList(integerResultingList);
-				log.debug("Resulting list[" + resultingList.size() + "]: "
-						+ resultingList);
+				log.debug("The resulting list with size({}) values: {}", resultingList.size(), resultingList);
 				return resultingList;
 			} else {
 				return null;
@@ -216,11 +217,10 @@ public class PropertyValueConverterUtil<T> {
 			log.debug("Value is null. No conversion!");
 			return null;
 		}
-		log.debug("Trying to convert value " + debug(value) + " of class: " + value.getClass() + ", to target Class ["
-				+ clazz + "]");
+		log.debug("Trying to convert value {} of class: {}, to target Class [{}]",
+				debug(value), value.getClass(), clazz);
 		if (Collection.class.isAssignableFrom(clazz)) {
-			log.debug("This class [" + clazz.getSimpleName()
-					+ "] is a collection! Using valueToCollection ...");
+			log.debug("This class [{}] is a collection! Using valueToCollection ...", clazz.getSimpleName());
 			// TODO: Why Integer? Why not Number?
 			return valueListToCollection(value,
 					(Class<? extends Collection>) clazz, Integer.class);
@@ -228,22 +228,21 @@ public class PropertyValueConverterUtil<T> {
 		Object convertedValue = null;
 		if (value != null) {
 			if (Collection.class.isAssignableFrom(value.getClass())) {
-				log.warn("The value is still a collection [" + value.getClass() + "], " +
-						"but the target is not: " + clazz);
+				log.warn("The value is still a collection [{}], but the target {}, is not.", value.getClass(), clazz);
 				log.warn("Attempting to get the first element...");
 				Collection colValue = (Collection) value;
 				if (!colValue.isEmpty()) {
 					value = colValue.iterator().next();
-					log.warn("Converted the collection element to: " + debug(value));
+					log.warn("Converted the collection element to: {}", debug(value));
 				}
 			}
-			log.debug("Converting " + debug(value) + " to [" + clazz + "]");
+			log.debug("Converting {} to [{}]", debug(value), clazz);
 			Converter converter = ConvertUtils.lookup(clazz);
-			log.debug("Converter found: " + converter);
+			log.debug("Converter found: {}", converter);
 			convertedValue = converter.convert(clazz, value);
-			log.debug("Converted value: " + debug(convertedValue));
+			log.debug("Converted value: {}", debug(convertedValue));
 			if (convertedValue != null) {
-				log.debug("ConvertedType: " + classFor(convertedValue));
+				log.debug("ConvertedType: {}", classFor(convertedValue));
 			}
 		}
 		return convertedValue;
@@ -258,34 +257,33 @@ public class PropertyValueConverterUtil<T> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Collection<?> valueListToCollection(Object value,
 											   Class<? extends Collection> collectionType, Class<?> elementType) {
-		log.debug("The conversion from value " + debug(value)
-				+ " to the collection type [" + collectionType.getSimpleName()
-				+ "] will result in elements of type ["
-				+ elementType.getSimpleName() + "]");
+		log.debug("The conversion from value {} to the collection type [{}] will result in elements of type [{}]",
+				debug(value), collectionType.getSimpleName(), elementType.getSimpleName());
 		CollectionUtil collectionUtil = new CollectionUtil();
 		Collection elements = collectionUtil.newCollection(collectionType);
-		log.debug("Created new Collection instance of class: "
-				+ classFor(elements).getSimpleName());
+		log.debug("Created new Collection instance of class: {}", classFor(elements).getSimpleName());
 		if (collectionUtil.isRawCollection(value)) {
-			log.debug("This is array of raw collection of values from a Collection subtype: "
-					+ value);
-			elements.addAll(convertAll(elementType, (Collection) value));
+			log.debug("This is array of raw collection of values from a Collection subtype: {}", value);
+			Collection<?> allConverted = convertAll(elementType, (Collection) value);
+			log.debug("All elements converted with size({}): {}", allConverted.size(), allConverted);
+			elements.addAll(allConverted);
 		} else if (collectionUtil.isArrayCollection(value)) {
 			log.debug("This is a Java Array of elements...");
 			Collection asList = asList(value);
-			log.debug("Created list from the array: " + asList);
+			log.debug("Created list from the array: {}", asList);
 			elements.addAll(convertAll(elementType, asList));
 		} else if (collectionUtil.isStringCommaSeparatedArray(value)) {
-			log.debug("This is a String Comma Separated Array: " + value);
+			log.debug("This is a String Comma Separated Array: {}", value);
 			Collection stringArrayAsTypeCollection = stringArrayToCollection(
 					value.toString(), collectionType, elementType);
-			log.debug("The stirng list was converted to: "
-					+ stringArrayAsTypeCollection);
+			log.debug("The stirng list was converted to: {}", stringArrayAsTypeCollection);
 			elements.addAll(stringArrayAsTypeCollection);
 		} else if (value != null) {
 			// & Number.class.isAssignableFrom(elementType) & NumberUtils.isCreatable(value.toString())) {
-			log.debug("The value is a single element convertable to a Number!");
-			elements.add(convert(elementType, value));
+			log.debug("The value is a single element convertible to a Number!");
+			Object converted = convert(elementType, value);
+			log.debug("Converted: {}", converted);
+			elements.add(converted);
 		}
 		return elements;
 	}
