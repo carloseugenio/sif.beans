@@ -2,14 +2,12 @@ package org.sif.beans.persistence.jpa;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.sif.beans.AnnotationUtil;
-import org.sif.beans.CollectionUtil;
-import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,31 +15,26 @@ import static org.sif.beans.Classes.classFor;
 import static org.sif.beans.Classes.getFieldClass;
 
 /**
- * Property setter capable of setting ManyToOne relation properties on the
- * target bean provided the relation primary key. If the property to set is not
- * a ManyToOne JPA Relation property or the given value isn't a unique value for
- * the relation bean primary key property this converter will throw an
- * IllegalArgumentException.
- * 
+ * Converts values to expected primary key values for ManyToOne relations.
+ *
  * @author Carlos Eugenio P. da Purificacao
- * 
+ *
  * @param <T>
- *            the target bean type.
  */
-@Named("ManyToOneRelationPropertySetter")
-public class ManyToOneRelationPropertySetter<T, I> extends
+@Named("OneToOneRelationPropertySetter")
+public class OneToOneRelationPropertySetter<T, I> extends
 		AbstractJPAPropertySetter<T, I> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public T doSetProperty(T bean, String property, Object value) {
-		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(
-				classFor(bean), property, ManyToOne.class);
-		if (isManyToOne) {
-			log.debug("Setting one to one property [{}] -> {}", property, value);
+		boolean isOneToOne = AnnotationUtil.fieldHasAnnotation(
+				classFor(bean), property, OneToOne.class);
+		if (isOneToOne) {
+			log.debug("Setting one to one property [" + property + "] -> " + value);
 			if (value != null) {
-				log.debug("Value class: {}", value.getClass());
+				log.debug("Value class: " + value.getClass());
 				if (String.class.isAssignableFrom(value.getClass())) {
 					log.debug("Value is String. Check if empty");
 					String stringValue = (String) value;
@@ -54,11 +47,13 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 			// This converter can't handle collection of values since it will
 			// lookup a single bean to convert
 			if (collectionUtil.isCollection(value)) {
+				/*throw new IllegalArgumentException("The provided value ["
+						+ value + "] to convert can't be a collection.");*/
 				log.warn("The provided value is a collection. Attempting to use the first value...");
 				Collection collection = (Collection) value;
 				if (!collection.isEmpty()) {
 					value = collection.iterator().next();
-					log.debug("First value: {} of class: {}", value, value.getClass());
+					log.debug("First value: " + value + " of class: " + value.getClass());
 					if (String.class.isAssignableFrom(value.getClass())) {
 						log.warn("The first value is an String, this shouldn't happen!");
 						log.warn("Unsetting the property!");
@@ -163,5 +158,6 @@ public class ManyToOneRelationPropertySetter<T, I> extends
 		}
 		return bean;
 	}
+
 
 }

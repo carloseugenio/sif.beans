@@ -50,6 +50,8 @@ public class Employee implements Serializable {
 	@Basic(optional = true)
 	private Boolean employed;
 
+	@OneToOne
+	private Adderss address;
 
 	public Long getId() {
 		return id;
@@ -132,5 +134,13 @@ public class Employee implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, department, name, age, friends, departments, employed);
+	}
+
+	public Adderss getAddress() {
+		return address;
+	}
+
+	public void setAddress(Adderss address) {
+		this.address = address;
 	}
 }

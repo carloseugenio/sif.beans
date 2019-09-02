@@ -44,18 +44,22 @@ publishing {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation 'commons-beanutils:commons-beanutils:1.9.3'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
+    testCompile group: 'junit', name: 'junit', version: '4.12'
     // Logging configuration
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     testRuntime 'org.apache.logging.log4j:log4j-api:2.8'
     testRuntime 'org.apache.logging.log4j:log4j-core:2.8'
     testRuntime 'org.apache.logging.log4j:log4j-slf4j-impl:2.8'
 
+	testCompile ("org.springframework:spring-core:${org_springframework_version}")
+	testCompile ("org.springframework:spring-context:${org_springframework_version}")
+
 	testCompile "org.mockito:mockito-core:1.10.19"
+	testCompile "org.springframework:spring-test:${org_springframework_version}"
 }

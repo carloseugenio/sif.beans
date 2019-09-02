@@ -74,9 +74,9 @@ public class Classes {
 	}
 
 	public static Object getPropertyIgnoreNull(Object bean, String property) {
-		Object ret = null;
-		String errmsg = "O bean [" + classFor(bean) + "] nao tem a propriedade [" + property
-				+ "] ou a mesma nao eh acessivel.";
+		Object ret;
+		String errmsg = String.format("The bean [%s] does not have the [%s] property or it is not accessible.",
+				classFor(bean), property);
 		try {
 			if (property.indexOf(".") != -1) {
 				try {
@@ -93,7 +93,7 @@ public class Classes {
 			if (ex.getMessage().trim().indexOf("Null property value for") != -1) {
 				// Ignorando o fato do valor da propriedade
 				// no bean ser nula.
-				return ret;
+				return null;
 			}
 			throw new IllegalArgumentException(
 					"Bean ou property nullo. [bean: " + bean + ", property: " + property + "]");

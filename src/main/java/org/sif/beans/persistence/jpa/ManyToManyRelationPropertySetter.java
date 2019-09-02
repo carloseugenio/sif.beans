@@ -65,7 +65,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 				+ property + "]");
 		// Get the property class that is the relation class
 		Class<?> relationBeanClass = AnnotationUtil
-				.getTypeParameterClassForManyToManyField(classFor(bean),
+				.getTypeParameterClassForCollectionField(classFor(bean),
 						property);
 		log.debug("RelationBeanClass: " + relationBeanClass);
 		// TODO: This "ID" is fixed, refactor it to make it configurable
@@ -136,7 +136,7 @@ public class ManyToManyRelationPropertySetter<T, I> extends AbstractJPAPropertyS
 				+ property + "]");
 		// Get the property class that is the relation class
 		Class<?> relationBeanClass = AnnotationUtil
-				.getTypeParameterClassForManyToManyField(classFor(bean),
+				.getTypeParameterClassForCollectionField(classFor(bean),
 						property);
 		log.debug("RelationBeanClass: " + relationBeanClass);
 		// TODO: This "ID" is fixed, refactor it to make it configurable

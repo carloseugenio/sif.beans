@@ -13,6 +13,8 @@ public class PropertySetterFactory<T, I> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	private PropertySetter<T, I> oneToOneRelationSetter;
+
 	private PropertySetter<T, I> manyToOneRelationSetter;
 
 	private PropertySetter<T, I> manyToManyRelationSetter;
@@ -22,6 +24,12 @@ public class PropertySetterFactory<T, I> {
 	private PropertySetter<T, I> simplePropertySetter;
 
 	private PropertyRelationUtil propertyRelationUtil;
+
+	@Inject
+	@Named("OneToOneRelationPropertySetter")
+	public void setOneToOneRelationSetter(PropertySetter<T, I> oneToOneRelationSetter) {
+		this.oneToOneRelationSetter = oneToOneRelationSetter;
+	}
 
 	@Inject
 	@Named("ManyToOneRelationPropertySetter")
@@ -53,14 +61,13 @@ public class PropertySetterFactory<T, I> {
 	}
 
 	public PropertySetter<T, I> getFor(T bean, String property) {
-		log.debug("Bean: " + bean);
-		log.debug("Getting PropertySetter for bean ["
-				+ classFor(bean) + "] and property [" + property + "]");
+		log.debug("Bean: {}", bean);
+		log.debug("Getting PropertySetter for bean [{}] and property [{}]", classFor(bean), property);
 		PropertySetter<T, I> setter = null;
 		try {
-			if (propertyRelationUtil.isNotFromRelation(classFor(bean),
-					property)) {
-				setter = simplePropertySetter;
+			if (propertyRelationUtil.isOneToOneRelation(
+					classFor(bean), property)) {
+				setter = oneToOneRelationSetter;
 			} else if (propertyRelationUtil.isManyToOneRelation(
 					classFor(bean), property)) {
 				setter = manyToOneRelationSetter;
@@ -70,11 +77,13 @@ public class PropertySetterFactory<T, I> {
 			} else if (propertyRelationUtil.isOneToManyRelation(
 					classFor(bean), property)) {
 				setter = oneToManyRelationSetter;
+			} else {
+				setter = simplePropertySetter;
 			}
-			log.debug("Setter found: " + setter);
+			log.debug("Setter found: {}", setter);
 			if (setter == null) {
 				throw new UnsupportedOperationException("Field [" + property
-						+ "] on beean [" + bean
+						+ "] on bean [" + bean
 						+ "] has an unsupported relation annotation.");
 			}
 			return setter;

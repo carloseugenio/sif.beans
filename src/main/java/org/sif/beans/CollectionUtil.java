@@ -2,7 +2,6 @@ package org.sif.beans;
 
 import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -138,30 +137,22 @@ public class CollectionUtil<T> {
 		if (value == null) {
 			return true;
 		}
-		if (isCollection(value)) {
-			if (isRawCollection(value)) {
-				@SuppressWarnings("rawtypes")
-				Collection col = (Collection) value;
-				return col.isEmpty();
-			} else if (isArrayCollection(value)) {
-				return Array.getLength(value) == 0;
-			}
-		}
-		return false;
+		List<T> collection = toCollection(value);
+		return collection.isEmpty();
 	}
 
-	private static Map<Class<?>, Class<?>> collectionImplentations;
+	private static Map<Class<?>, Class<?>> collectionImplementations;
 	static {
-		collectionImplentations = new HashMap<>();
-		collectionImplentations.put(Set.class, HashSet.class);
-		collectionImplentations.put(HashSet.class, HashSet.class);
-		collectionImplentations.put(List.class, ArrayList.class);
-		collectionImplentations.put(ArrayList.class, ArrayList.class);
+		collectionImplementations = new HashMap<>();
+		collectionImplementations.put(Set.class, HashSet.class);
+		collectionImplementations.put(HashSet.class, HashSet.class);
+		collectionImplementations.put(List.class, ArrayList.class);
+		collectionImplementations.put(ArrayList.class, ArrayList.class);
 	}
 
 	public Collection<?> newCollection(Class<?> collectionType) {
 		try {
-			return (Collection<?>) collectionImplentations.get(collectionType)
+			return (Collection<?>) collectionImplementations.get(collectionType)
 					.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);

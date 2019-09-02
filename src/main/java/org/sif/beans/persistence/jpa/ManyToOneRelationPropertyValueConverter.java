@@ -1,7 +1,6 @@
 package org.sif.beans.persistence.jpa;
 
 import org.sif.beans.AnnotationUtil;
-import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,7 @@ import static org.sif.beans.Classes.getFieldClass;
  * @param <T>
  */
 @Named("ManyToOnePropertyValueConverter")
-public class ManyToOneRelationPropertyValueConverter<T> implements
-		PropertyValueConverter<T> {
+public class ManyToOneRelationPropertyValueConverter<T> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -43,7 +41,6 @@ public class ManyToOneRelationPropertyValueConverter<T> implements
 	 * @return the value converted to the correct type the property on bean is
 	 *         expecting
 	 */
-	@Override
 	public Object convertBeanPropertyValue(Class<?> beanClass,
 			String beanProperty, Object value) throws Exception {
 

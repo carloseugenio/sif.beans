@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -80,4 +81,33 @@ public class CollectionUtilTest {
 		collectionUtil.getFirstCollectionElement(stringArrayCollection, Integer.class);
 	}
 
+	@Test
+	public void testIsEmptyWithNullValue() {
+		assertTrue(collectionUtil.isEmpty(null));
+	}
+
+	@Test
+	public void testIsEmptyWithEmptyList() {
+		assertTrue(collectionUtil.isEmpty(Collections.EMPTY_LIST));
+	}
+
+	@Test
+	public void testIsEmptyWithEmptyString() {
+		assertTrue(collectionUtil.isEmpty(""));
+	}
+
+	@Test
+	public void testIsEmptyWithEmptyArray() {
+		assertTrue(collectionUtil.isEmpty(new Object[]{}));
+	}
+
+	@Test
+	public void testNotEmptyWithArray() {
+		assertFalse(collectionUtil.isEmpty(new Object[]{"b"}));
+	}
+
+	@Test
+	public void testNotEmptyWithList() {
+		assertFalse(collectionUtil.isEmpty(Arrays.asList("b")));
+	}
 }

@@ -1,7 +1,6 @@
 package org.sif.beans.persistence.jpa;
 
 import org.sif.beans.CollectionUtil;
-import org.sif.beans.PropertyValueConverter;
 import org.sif.beans.PropertyValueConverterUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +13,7 @@ import static org.sif.beans.Classes.getFieldClass;
 
 @Named("ManyToManyPropertyValueConverter")
 public class ManyToManyRelationPropertyValueConverter<T> extends
-		ManyToOneRelationPropertyValueConverter<T> implements
-		PropertyValueConverter<T> {
+		ManyToOneRelationPropertyValueConverter<T> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 

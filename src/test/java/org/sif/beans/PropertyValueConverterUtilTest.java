@@ -53,6 +53,13 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test
+	public void intListAsSet() {
+		Object list = Arrays.asList(1, 2);
+		Set<Integer> expected = new HashSet(Arrays.asList(1, 2));
+		assertEquals(expected, converterUtil.valueListToCollection(list, Set.class, Integer.class));
+	}
+
+	@Test
 	public void convertStringValueToInteger() {
 		Integer expected = 1;
 		String value = "1";
