@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,8 +35,6 @@ import static org.sif.beans.Debugger.debug;
 public class PropertyValueConverterUtil<T> {
 
 	Logger log = LoggerFactory.getLogger(getClass());
-
-
 
 	/**
 	 * Register converters without using the default value
@@ -85,10 +84,10 @@ public class PropertyValueConverterUtil<T> {
 	}
 
 	/**
-	 * Converts the given value to the correct list having elements of the
-	 * given element type
+	 * Helper method for the {@link #valueListToCollection(Object, Class, Class)} method in which the
+	 * collection type is always the {@link java.util.List} class.
 	 *
-	 * @param elementType the result list element type
+	 * @param elementType the result list elements type
 	 * @param value    the value to convert
 	 * @return as list of the given type with the given elements
 	 */
@@ -108,6 +107,7 @@ public class PropertyValueConverterUtil<T> {
 	 * resulting collection type will depend on the provided collection. If it
 	 * was an array of primitive type, the final collection will contain
 	 * elements with the same type as the original array.
+	 * @throws IllegalArgumentException if the provided value is not an array
 	 */
 	public List<?> asList(Object value) {
 		log.debug("Converting the array of class: "
@@ -216,7 +216,7 @@ public class PropertyValueConverterUtil<T> {
 		log.debug("Trying to convert value {} of class: {}, to target Class [{}]",
 				debug(value), value.getClass(), clazz);
 		if (Collection.class.isAssignableFrom(clazz)) {
-			log.debug("This class [{}] is a collection! Using valueToCollection ...", clazz.getSimpleName());
+			/*log.debug("This class [{}] is a collection! Using valueToCollection ...", clazz);
 			Collection col = (Collection) value;
 			// TODO: Why Integer? Why not Number?
 			Class<?> targetType = Integer.class;
@@ -225,7 +225,12 @@ public class PropertyValueConverterUtil<T> {
 				targetType = col.iterator().next().getClass();
 			}
 			return valueListToCollection(value,
-					(Class<? extends Collection>) clazz, targetType);
+					(Class<? extends Collection>) clazz, targetType);*/
+			throw new IllegalArgumentException("The convert methods should not be used to convert to collections.");
+		}
+		if (clazz == Object.class) {
+			log.warn("Asked to convert to Object.class. Not possible. Using the value class instead!");
+			clazz = value.getClass();
 		}
 		Object convertedValue = null;
 		if (value != null) {

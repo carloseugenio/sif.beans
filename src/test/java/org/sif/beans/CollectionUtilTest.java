@@ -64,25 +64,25 @@ public class CollectionUtilTest {
 
 	@Test
 	public void getFirstCollectionElement() {
-		assertEquals("A", collectionUtil.getFirstCollectionElement(stringArrayCollection, String.class));
-		assertEquals("A", collectionUtil.getFirstCollectionElement(listArrayCollection, String.class));
-		assertEquals("A", collectionUtil.getFirstCollectionElement(commaSeparatedList, String.class));
+		assertEquals("A", collectionUtil.getFirstCollectionElement(stringArrayCollection));
+		assertEquals("A", collectionUtil.getFirstCollectionElement(listArrayCollection));
+		assertEquals("A", collectionUtil.getFirstCollectionElement(commaSeparatedList));
 	}
 
 	@Test
 	public void getFirstCollectionElementForBeanIdType() {
-		assertEquals(1, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Integer.class));
-		assertEquals(1L, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection, Long.class));
+		assertEquals(1, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection));
+		assertEquals(1L, collectionUtil.getFirstCollectionElement(stringNumberArrayCollection));
 	}
 
 	@Test(expected = ConversionException.class)
 	public void getFirstCollectionElementWrongType() {
-		collectionUtil.getFirstCollectionElement(commaSeparatedList, Integer.class);
+		collectionUtil.getFirstCollectionElement(commaSeparatedList);
 	}
 
 	@Test(expected = ConversionException.class)
 	public void getFirstCollectionElementWrongTypeForArray() {
-		collectionUtil.getFirstCollectionElement(stringArrayCollection, Integer.class);
+		collectionUtil.getFirstCollectionElement(stringArrayCollection);
 	}
 
 	@Test
