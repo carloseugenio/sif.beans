@@ -141,4 +141,11 @@ public class PropertyValueConverterUtilTest {
 		converterUtil.convert(List.class, "1");
 	}
 
+	@Test
+	public void convertBeanSimpleProperty() {
+		Long expected = 1L;
+		Long result = (Long) converterUtil.convert(Employee.class, "id", "1");
+		assertEquals(expected, result);
+	}
+
 }
