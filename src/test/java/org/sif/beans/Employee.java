@@ -51,7 +51,7 @@ public class Employee implements Serializable {
 	private Boolean employed;
 
 	@OneToOne
-	private Adderss address;
+	private Address address;
 
 	public Long getId() {
 		return id;
@@ -136,11 +136,11 @@ public class Employee implements Serializable {
 		return Objects.hash(id, department, name, age, friends, departments, employed);
 	}
 
-	public Adderss getAddress() {
+	public Address getAddress() {
 		return address;
 	}
 
-	public void setAddress(Adderss address) {
+	public void setAddress(Address address) {
 		this.address = address;
 	}
 }

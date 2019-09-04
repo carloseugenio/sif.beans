@@ -66,7 +66,7 @@ public class OneToOneRelationPropertySetter<T, I> extends
 			}
 			// This is a many to one annotation. Handler should get the related
 			// entity from repository and set it on the bean field
-			handleManyToOneRelation(bean, property, value);
+			handleOneToOneRelation(bean, property, value);
 		} else {
 			throw new IllegalArgumentException("The provided property ["
 					+ property + "] is not a many to one property on bean ["
@@ -76,7 +76,7 @@ public class OneToOneRelationPropertySetter<T, I> extends
 	}
 
 	@SuppressWarnings("unchecked")
-	private void handleManyToOneRelation(T bean, String property, Object value) {
+	private void handleOneToOneRelation(T bean, String property, Object value) {
 		// Get the property class that is the relation class
 		Class<?> relationBeanClass = getFieldClass(classFor(bean),
 				property);
