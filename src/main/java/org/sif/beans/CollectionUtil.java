@@ -7,10 +7,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.sif.beans.Classes.classFor;
-import static org.sif.beans.Classes.isPrimitiveArrayType;
 import static org.sif.beans.Debugger.debug;
 
 /**
@@ -33,7 +43,7 @@ public class CollectionUtil<T> {
 		collectionImplementations.put(AbstractList.class, ArrayList.class);
 	}
 
-	Logger log = LoggerFactory.getLogger(CollectionUtil.class);
+	private Logger log = LoggerFactory.getLogger(CollectionUtil.class);
 
 	/**
 	 * If the given object is a collection, returns the first element on the collection.

@@ -5,8 +5,24 @@ import org.junit.Test;
 import java.util.Collection;
 
 import static org.junit.Assert.*;
+import static org.sif.beans.Classes.classFor;
 
 public class ClassesTest {
+
+	@Test
+	public void testClassForNull() {
+		assertNull(classFor(null));
+	}
+
+	@Test
+	public void testClasssFor() {
+		assertEquals(String.class, classFor(""));
+	}
+
+	@Test
+	public void testTypeFor() {
+
+	}
 
 	@Test
 	public void testGetPropertyNames() {
@@ -23,4 +39,10 @@ public class ClassesTest {
 		Object coordinator = Classes.getPropertyIgnoreNull(new Employee(), "department.coordinator");
 		assertNull(coordinator);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPropertyIgnoreNullNonExistent() {
+		Classes.getPropertyIgnoreNull(new Employee(), "other");
+	}
+
 }
