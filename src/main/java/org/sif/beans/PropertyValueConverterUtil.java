@@ -103,9 +103,9 @@ public class PropertyValueConverterUtil<T> {
 
 	/**
 	 * Tries to determine the correct type for an array of elements and return
-	 * an appropriate collection of elements converted to that type. The
-	 * resulting collection type will depend on the provided collection. If it
-	 * was an array of primitive type, the final collection will contain
+	 * an appropriate {@link java.util.List} of elements converted to that type. The
+	 * resulting {@link java.util.List} type will depend on the provided array. If it
+	 * was an array of primitive types, the final {@link java.util.List} will contain
 	 * elements with the same type as the original array.
 	 * @throws IllegalArgumentException if the provided value is not an array
 	 */

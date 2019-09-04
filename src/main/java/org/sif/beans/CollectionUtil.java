@@ -7,18 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.sif.beans.Classes.classFor;
+import static org.sif.beans.Classes.isPrimitiveArrayType;
 import static org.sif.beans.Debugger.debug;
 
 /**
@@ -49,19 +41,33 @@ public class CollectionUtil<T> {
 	 * @throws IllegalArgumentException if the provided value is not a collection.
 	 * @throws NoSuchElementException   if the provided collection is empty.
 	 */
-	public Object getFirstCollectionElement(final Object value) {
-		log.debug("Getting first element for: {} ", value);
+	public <T> T getFirstCollectionElement(final Object value, Class<T>... type) {
+		log.debug("Getting first element for: {} and type {}", value, type);
 		if (!isCollectionOfAnyType(value)) {
 			throw new IllegalArgumentException("The provided value (" + value + ") is not a collection");
 		} else {
 			PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
-			Collection collection = converterUtil.valueListToCollection(value, List.class, Object.class);
+			Class<?> finalType = String.class;
+			if (isNotMissing(type)) {
+				finalType = type[0];
+			} else if (isArrayCollection(value)) {
+				log.debug("Type not provided, but the value is a RAW array. Getting its type");
+				Class<?> arrayType = value.getClass().getComponentType();
+				log.debug("Array type: {}", arrayType);
+				finalType = arrayType;
+			}
+			log.debug("Getting first element collection for type {}", finalType);
+			Collection<T> collection = converterUtil.valueListToCollection(value, List.class, finalType);
 			if (!collection.isEmpty()) {
 				return collection.iterator().next();
 			} else {
 				throw new NoSuchElementException("The provided collection (" + value + ") is empty!");
 			}
 		}
+	}
+
+	private <T> boolean isNotMissing(Class<T>[] type) {
+		return type != null && type.length > 0;
 	}
 
 	/**
@@ -151,8 +157,8 @@ public class CollectionUtil<T> {
 	}
 
 	private Class<?> implementation(Class<?> type) {
-		Optional<Class<?>> implementationKey = collectionImplementations.keySet().stream()
-				.filter(it -> it.isAssignableFrom(type)).findFirst();
+		Optional<Class<?>> implementationKey =
+				collectionImplementations.keySet().stream().filter(it -> it.isAssignableFrom(type)).findFirst();
 		if (!implementationKey.isPresent()) {
 			throw new IllegalArgumentException("Couldn't find a collection implementation for: " + type);
 		}
@@ -167,22 +173,35 @@ public class CollectionUtil<T> {
 		}
 	}
 
-	public List<T> toCollection(Object value) {
-		if (!isCollectionOfAnyType(value)) {
-			throw new IllegalArgumentException("The provided value (" + value + ") is not a collection");
+	/**
+	 * Returns the given value as a {@link java.util.List}. If the value is null, an empty List is
+	 * returned. If it is a single element it will be wrapped into a List, unless it is a comma
+	 * separated list of values. In the last case, it will be wrapped in a List of strings. Unlike
+	 * the {@link Arrays#asList(Object[])} method, it not act only on arrays. It will try to narrow
+	 * any value into a {@link java.util.List}. If the provided value is a {@link java.util.Collection},
+	 * or an array, it will be coerced into a {@link java.util.List}.
+	 *
+	 * @param value the value to be converted into a List
+	 * @return the value wrapped into a List.
+	 */
+	public List<?> asList(Object value) {
+		if (value == null) {
+			return Collections.emptyList();
 		}
-		Class<?> collectionType = List.class;
-		Class<?> elementType = getFirstCollectionElement(value).getClass();
-		log.debug(
-				"Converting value " + debug(value) + " of class: " + classFor(value)
-						.getSimpleName() + ", to a " + collectionType
-						.getSimpleName() + " of type: " + elementType + " ...");
 		PropertyValueConverterUtil<T> converterUtil = new PropertyValueConverterUtil();
-		if (elementType.isArray() || Collection.class.isAssignableFrom(elementType)) {
-			log.debug(
-					"The provided type for value is an Array or Collection. The result Collection will be of Strings!");
-			elementType = String.class;
+		Class<?> elementType = String.class;
+		log.debug("Trying to transform value {}, of class {}, to List...", value, classFor(value));
+		if (isCollectionOfAnyType(value)) {
+			try {
+				elementType = getFirstCollectionElement(value, elementType).getClass();
+			} catch (Exception ex) {
+				log.warn("Could not infer the collection element type!");
+			}
+		} else {
+			elementType = value.getClass();
 		}
-		return converterUtil.asList((Class<T>) elementType, value);
+		log.debug("Converting value {} of class: {} to a List", debug(value), elementType);
+		List<?> convertedValue = (List<?>) converterUtil.valueListToCollection(value, List.class, elementType);
+		return convertedValue;
 	}
 }
