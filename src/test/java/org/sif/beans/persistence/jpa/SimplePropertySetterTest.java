@@ -39,7 +39,7 @@ public class SimplePropertySetterTest {
 		Employee employee = new Employee();
 		employee.setId(1L);
 		setter.doSetProperty(employee, "id", StringUtils.EMPTY);
-		assertEquals(new Long(1L), employee.getId());
+		assertEquals(Long.valueOf(1L), employee.getId());
 	}
 
 	@Test

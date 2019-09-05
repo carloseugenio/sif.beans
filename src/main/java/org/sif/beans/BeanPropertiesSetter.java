@@ -63,13 +63,14 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 		log.debug("Setting all properties with parameters: " + parameters);
 		// Filter the ignore properties
 		final List<String> ignoreList = new ArrayList<>();
-		for(String param : parameters.keySet()) {
-			if (IGNORE_PROPERTY.equals(param)) {
-				ignoreList.add(parameters.get(param).toString());
+		for(Map.Entry entry : parameters.entrySet()) {
+			if (IGNORE_PROPERTY.equals(entry.getKey())) {
+				ignoreList.add(entry.getValue().toString());
 			}
-			if (IGNORE_EMPTY_PROPERTY.equals(param)) {
-				// Check if it is empty
-				String ignorePropertyName = (String) parameters.get(param);
+			if (IGNORE_EMPTY_PROPERTY.equals(entry.getKey())) {
+				// The property name to ignore. Check if it is empty
+				String ignorePropertyName = entry.getValue().toString();
+				// The ignore property name is another value in parameters using it as a key
 				Object value = parameters.get(ignorePropertyName);
 				if (value == null ||
 						(value instanceof String && StringUtils.isEmpty(value.toString()))) {
@@ -79,14 +80,15 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 			}
 		}
 		// For each key in the parameters map
-		for (String property : parameters.keySet()) {
+		for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+			String property = entry.getKey();
 			// If the ignore property was defined for this property then skip it
 			if (ignoreList.contains(property)) {
 				log.debug("Ignoring property [" + property + "]");
 				continue;
 			}
 			// First get the parameter value before any modifications
-			Object parameterValue = parameters.get(property);
+			Object parameterValue = entry.getValue();
 			log.debug("Handling property: [" + property + "] with value: [" + parameterValue + "]");
 			boolean dissociate = false;
 			// If the dissociate prefix was used, change it to the real property

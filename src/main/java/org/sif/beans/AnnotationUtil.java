@@ -31,7 +31,7 @@ public final class AnnotationUtil {
 	/**
 	 * Logger.
 	 */
-	public static Logger log = LoggerFactory.getLogger(AnnotationUtil.class);
+	final static Logger log = LoggerFactory.getLogger(AnnotationUtil.class);
 
 	/**
 	 * Returns true if the class has the indicated annotation

@@ -16,4 +16,12 @@ public class TestBean {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public String getNonReadable() {
+		return nonReadable;
+	}
+
+	public void setNonReadable(String nonReadable) {
+		this.nonReadable = nonReadable;
+	}
 }

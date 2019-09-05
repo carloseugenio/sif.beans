@@ -40,11 +40,16 @@ public class BeanPropertiesSetterTest {
 	PersistenceManager facade;
 
 	@Mock
-	PersistenceManager relationFacade;
+	PersistenceManager departmentRelationFacade;
+
+	@Mock
+	PersistenceManager addressRelationFacade;
 
 	PropertySetterFactory factory = spy(new PropertySetterFactory());
 
-	List<Department> relations = new ArrayList();
+	List<Department> departments = new ArrayList();
+
+	List<Address> addresses = new ArrayList<>();
 
 	private void addParameter(String key, Object value) {
 		parameters.put(key, value);
@@ -63,16 +68,22 @@ public class BeanPropertiesSetterTest {
 		when(oneToManyRelationPropertySetter.getFacade()).thenReturn(facade);
 		when(oneToOneRelationPropertySetter.getFacade()).thenReturn(facade);
 
-		when(manyToOneRelationPropertySetter.getRelationFacade()).thenReturn(relationFacade);
-		when(manyToManyRelationPropertySetter.getRelationFacade()).thenReturn(relationFacade);
-		when(oneToManyRelationPropertySetter.getRelationFacade()).thenReturn(relationFacade);
-		when(oneToOneRelationPropertySetter.getRelationFacade()).thenReturn(relationFacade);
+		when(manyToOneRelationPropertySetter.getRelationFacade()).thenReturn(departmentRelationFacade);
+		when(manyToManyRelationPropertySetter.getRelationFacade()).thenReturn(departmentRelationFacade);
+		when(oneToManyRelationPropertySetter.getRelationFacade()).thenReturn(departmentRelationFacade);
+		when(oneToOneRelationPropertySetter.getRelationFacade()).thenReturn(addressRelationFacade);
 
 
 		Department department = new Department();
 		department.setId(1L);
-		relations.add(department);
-		when(relationFacade.findByField("id", 1L)).thenReturn(relations);
+		departments.add(department);
+		when(departmentRelationFacade.findByField("id", 1L)).thenReturn(departments);
+
+		Address address = new Address();
+		address.setId(1L);
+		addresses.add(address);
+		when(addressRelationFacade.findByField("id", 1L)).thenReturn(addresses);
+
 		PropertySetter simpleSetter = new SimplePropertySetter();
 		PropertyValueConverterUtil converterUtil = new PropertyValueConverterUtil();
 		((SimplePropertySetter) simpleSetter).setConverterUtil(converterUtil);
@@ -153,49 +164,57 @@ public class BeanPropertiesSetterTest {
 	public void testManyToOneRelationPropertySet() {
 		Employee employee = new Employee();
 
-		addParameter("department", relations.get(0).getId());
+		addParameter("department", departments.get(0).getId());
 
 		bps.setAllProperties(employee, parameters);
 
-		verify(this.manyToOneRelationPropertySetter, times(1)).doSetProperty(employee, "department", relations.get(0).getId());
+		verify(this.manyToOneRelationPropertySetter, times(1)).doSetProperty(employee, "department", departments.get(0).getId());
 
-		assertEquals(relations.get(0), employee.getDepartment());
+		assertEquals(departments.get(0), employee.getDepartment());
 	}
 
 	@Test
 	public void testManyToOneRelationPropertyUnSet() {
 		Employee employee = new Employee();
+		employee.setDepartment(departments.get(0));
 
-		addParameter(BeanPropertiesSetter.DISSOCIATE_PREFIX + "department", 1);
+		addParameter(BeanPropertiesSetter.DISSOCIATE_PREFIX + "department", 1L);
 
 		bps.setAllProperties(employee, parameters);
 
 		verify(this.manyToOneRelationPropertySetter,
-				times(1)).unsetProperty(employee, "department", 1);
+				times(1)).unsetProperty(employee, "department", 1L);
+
+		assertEquals(null, employee.getDepartment());
 	}
 
 	@Test
 	public void testOneToOneRelationPropertySet() {
 		Employee employee = new Employee();
-		Address address = new Address();
 
-		addParameter("address", address);
+		addParameter("address", addresses.get(0).getId());
 
 		bps.setAllProperties(employee, parameters);
 
-		verify(this.oneToOneRelationPropertySetter, times(1)).doSetProperty(employee, "address", address);
+		verify(this.oneToOneRelationPropertySetter,
+				times(1)).doSetProperty(employee, "address", addresses.get(0).getId());
+
+		assertEquals(addresses.get(0), employee.getAddress());
 	}
 
 	@Test
 	public void testOneToOneRelationPropertyUnSet() {
 		Employee employee = new Employee();
+		employee.setAddress(addresses.get(0));
 
-		addParameter(BeanPropertiesSetter.DISSOCIATE_PREFIX + "address", 1);
+		addParameter(BeanPropertiesSetter.DISSOCIATE_PREFIX + "address", 1L);
 
 		bps.setAllProperties(employee, parameters);
 
 		verify(this.oneToOneRelationPropertySetter,
-				times(1)).unsetProperty(employee, "address", 1);
+				times(1)).unsetProperty(employee, "address", 1L);
+
+		assertEquals(null, employee.getAddress());
 	}
 
 }

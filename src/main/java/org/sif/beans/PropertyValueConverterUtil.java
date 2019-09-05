@@ -14,10 +14,7 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.sif.beans.Classes.*;
 import static org.sif.beans.Debugger.debug;
@@ -233,24 +230,22 @@ public class PropertyValueConverterUtil<T> {
 			clazz = value.getClass();
 		}
 		Object convertedValue = null;
-		if (value != null) {
-			if (Collection.class.isAssignableFrom(value.getClass())) {
-				log.warn("The value is still a collection [{}], but the target {}, is not.", value.getClass(), clazz);
-				log.warn("Attempting to get the first element...");
-				Collection colValue = (Collection) value;
-				if (!colValue.isEmpty()) {
-					value = colValue.iterator().next();
-					log.warn("Converted the collection element to: {}", debug(value));
-				}
+		if (Collection.class.isAssignableFrom(value.getClass())) {
+			log.warn("The value is still a collection [{}], but the target {}, is not.", value.getClass(), clazz);
+			log.warn("Attempting to get the first element...");
+			Collection colValue = (Collection) value;
+			if (!colValue.isEmpty()) {
+				value = colValue.iterator().next();
+				log.warn("Converted the collection element to: {}", debug(value));
 			}
-			log.debug("Converting {} to [{}]", debug(value), clazz);
-			Converter converter = ConvertUtils.lookup(clazz);
-			log.debug("Converter found: {}", converter);
-			convertedValue = converter.convert(clazz, value);
-			log.debug("Converted value: {}", debug(convertedValue));
-			if (convertedValue != null) {
-				log.debug("ConvertedType: {}", classFor(convertedValue));
-			}
+		}
+		log.debug("Converting {} to [{}]", debug(value), clazz);
+		Converter converter = ConvertUtils.lookup(clazz);
+		log.debug("Converter found: {}", converter);
+		convertedValue = converter.convert(clazz, value);
+		log.debug("Converted value: {}", debug(convertedValue));
+		if (convertedValue != null) {
+			log.debug("ConvertedType: {}", classFor(convertedValue));
 		}
 		return convertedValue;
 	}
@@ -268,6 +263,11 @@ public class PropertyValueConverterUtil<T> {
 				debug(value), collectionType.getSimpleName(), elementType.getSimpleName());
 		CollectionUtil collectionUtil = new CollectionUtil();
 		Collection elements = collectionUtil.newCollection(collectionType);
+		if (value == null) {
+			// If the given value is null, the conversion result
+			// will be an empty collection.
+			return elements;
+		}
 		log.debug("Created new Collection instance of class: {}", classFor(elements).getSimpleName());
 		if (collectionUtil.isRawCollection(value)) {
 			log.debug("This is array of raw collection of values from a Collection subtype: {}", value);
@@ -285,7 +285,7 @@ public class PropertyValueConverterUtil<T> {
 					value.toString(), collectionType, elementType);
 			log.debug("The stirng list was converted to: {}", stringArrayAsTypeCollection);
 			elements.addAll(stringArrayAsTypeCollection);
-		} else if (value != null) {
+		} else {
 			// & Number.class.isAssignableFrom(elementType) & NumberUtils.isCreatable(value.toString())) {
 			log.debug("The value is a single element convertible to a Number!");
 			Object converted = convert(elementType, value);

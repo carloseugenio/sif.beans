@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("unchecked")
 public class PropertyValueConverterUtilTest {
@@ -148,4 +149,8 @@ public class PropertyValueConverterUtilTest {
 		assertEquals(expected, result);
 	}
 
+	@Test
+	public void convertNullToEmptyList() {
+		assertTrue(converterUtil.valueListToCollection(null, List.class, Integer.class).isEmpty());
+	}
 }

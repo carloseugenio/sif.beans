@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.util.Collection;
 import java.util.List;
@@ -135,9 +134,9 @@ public class OneToOneRelationPropertySetter<T, I> extends
 
 	@Override
 	public T unsetProperty(T bean, String property, Object value) {
-		boolean isManyToOne = AnnotationUtil.fieldHasAnnotation(
-				classFor(bean), property, ManyToOne.class);
-		if (isManyToOne) {
+		boolean isOneToOne = AnnotationUtil.fieldHasAnnotation(
+				classFor(bean), property, OneToOne.class);
+		if (isOneToOne) {
 			// This converter can't handle collection of values since it will
 			// lookup a single bean to convert
 			if (collectionUtil.isCollection(value)) {
@@ -153,7 +152,7 @@ public class OneToOneRelationPropertySetter<T, I> extends
 			}
 		} else {
 			throw new IllegalArgumentException("The provided property ["
-					+ property + "] is not a many to one property on bean ["
+					+ property + "] is not a one to one property on bean ["
 					+ bean + "].");
 		}
 		return bean;
