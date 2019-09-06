@@ -8,6 +8,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import static org.sif.beans.Classes.classFor;
 
+/**
+ * Factory for {@link PropertySetter}s.
+ * @param <T> the bean type
+ * @param <I> the bean primary key type
+ */
 @Named
 public class PropertySetterFactory<T, I> {
 

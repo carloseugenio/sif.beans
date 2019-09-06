@@ -20,36 +20,36 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class BeanPropertiesSetterTest {
 
-	BeanPropertiesSetter bps = new BeanPropertiesSetter();
-	TestBean bean = new TestBean();
-	Map<String, Object> parameters = new HashMap<>();
+	private BeanPropertiesSetter bps = new BeanPropertiesSetter();
+	private TestBean bean = new TestBean();
+	private Map<String, Object> parameters = new HashMap<>();
 
 	@Spy
-	ManyToOneRelationPropertySetter manyToOneRelationPropertySetter;
+	private ManyToOneRelationPropertySetter manyToOneRelationPropertySetter;
 
 	@Spy
-	ManyToManyRelationPropertySetter manyToManyRelationPropertySetter;
+	private ManyToManyRelationPropertySetter manyToManyRelationPropertySetter;
 
 	@Spy
-	OneToManyRelationPropertySetter oneToManyRelationPropertySetter;
+	private OneToManyRelationPropertySetter oneToManyRelationPropertySetter;
 
 	@Spy
-	OneToOneRelationPropertySetter oneToOneRelationPropertySetter;
+	private OneToOneRelationPropertySetter oneToOneRelationPropertySetter;
 
 	@Mock
-	PersistenceManager facade;
+	private PersistenceManager facade;
 
 	@Mock
-	PersistenceManager departmentRelationFacade;
+	private PersistenceManager departmentRelationFacade;
 
 	@Mock
-	PersistenceManager addressRelationFacade;
+	private PersistenceManager addressRelationFacade;
 
-	PropertySetterFactory factory = spy(new PropertySetterFactory());
+	private PropertySetterFactory factory = spy(new PropertySetterFactory());
 
-	List<Department> departments = new ArrayList();
+	private List<Department> departments = new ArrayList();
 
-	List<Address> addresses = new ArrayList<>();
+	private List<Address> addresses = new ArrayList<>();
 
 	private void addParameter(String key, Object value) {
 		parameters.put(key, value);
