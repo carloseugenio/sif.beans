@@ -27,4 +27,9 @@ public interface PropertiesSetter<T> {
 	 */
 	void setAllProperties(T bean, Map<String, Object> parameters);
 
+	/**
+	 * Returns a {@link PropertySetterFactory} to query property setters
+	 * @return the bound property setter factory
+	 */
+	PropertySetterFactory getFactory();
 }

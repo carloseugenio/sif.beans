@@ -10,7 +10,6 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.remove;
 
@@ -34,6 +33,10 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 	Logger log = LoggerFactory.getLogger(BeanPropertiesSetter.class);
 
 	public static final String IGNORE_EMPTY_PROPERTY = "org.sif.beans.ignore.empty";
+	/**
+	 * If this prefix is found in any parameter, the remaining suffix will be considered
+	 * as a property in the bean to unset (dissociate)
+	 */
 	public static final String DISSOCIATE_PREFIX = "dissociate-";
 	public static final String IGNORE_PROPERTY = "org.sif.beans.ignore";
 
@@ -103,7 +106,7 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 				continue;
 			}
 			// Create the appropriate property setter
-			PropertySetter<T, I> setter = factory.getFor(bean, property);
+			PropertySetter<T, I> setter = getFactory().getFor(bean, property);
 			if (dissociate) {
 				// unset the property
 				setter.unsetProperty(bean, property, parameterValue);
@@ -114,8 +117,13 @@ public class BeanPropertiesSetter<T, I> implements PropertiesSetter<T> {
 		}
 	}
 
+	@Override
+	public PropertySetterFactory<T, I> getFactory() {
+		return this.factory;
+	}
+
 	@Inject
-	public void setFactory(PropertySetterFactory<T, I> factory) {
+	public void setFactory(BeanPropertySetterFactory<T, I> factory) {
 		this.factory = factory;
 	}
 }
