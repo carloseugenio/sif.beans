@@ -158,4 +158,9 @@ public class PropertyValueConverterUtilTest {
 	public void convertEmptyValue() {
 		converterUtil.convert(Employee.class, "id", "");
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void convertNonExistingField() {
+		converterUtil.convert(Employee.class, "other", "");
+	}
 }

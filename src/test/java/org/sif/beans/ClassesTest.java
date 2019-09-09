@@ -2,6 +2,7 @@ package org.sif.beans;
 
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 import static org.junit.Assert.*;
@@ -40,9 +41,33 @@ public class ClassesTest {
 		assertNull(coordinator);
 	}
 
+	@Test
+	public void testGetNestedField() {
+		Field coordinator = Classes.getField(Employee.class, "department.coordinator");
+		assertNotNull(coordinator);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetPropertyIgnoreNullNonExistent() {
 		Classes.getPropertyIgnoreNull(new Employee(), "other");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetFieldNonExistent() {
+		Classes.getField(Employee.class, "other");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetFieldClassNonExistent() {
+		Classes.getFieldClass(Employee.class, "other");
+	}
+
+	@Test
+	public void isNested() {
+		assertTrue(Classes.isNested("a.b"));
+		assertTrue(Classes.isNested("a.b.c"));
+		assertFalse(Classes.isNested("a"));
+		assertFalse(Classes.isNested(""));
+		assertFalse(Classes.isNested(null));
+	}
 }

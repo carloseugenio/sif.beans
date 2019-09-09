@@ -6,7 +6,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,11 +29,7 @@ public class Classes {
 	 */
 	public static Class<?> getFieldClass(Class<?> beanClass, String fieldName) {
 		Field field = getField(beanClass, fieldName);
-		if (field != null) {
-			return field.getType();
-		} else {
-			throw new IllegalArgumentException("Field [" + fieldName + "] not found in [" + beanClass + "]");
-		}
+		return field.getType();
 	}
 
 	/**
@@ -87,32 +82,25 @@ public class Classes {
 	}
 
 	public static Object getPropertyIgnoreNull(Object bean, String property) {
-		Object ret;
-		String errmsg = String.format("The bean [%s] does not have the [%s] property or it is not accessible.",
-				classFor(bean), property);
 		try {
 			if (property.indexOf(".") != -1) {
 				try {
-					ret = PropertyUtils.getNestedProperty(bean, property);
+					return PropertyUtils.getNestedProperty(bean, property);
 				} catch (org.apache.commons.beanutils.NestedNullException nne) {
 					return null;
 				}
 			} else {
-				ret = PropertyUtils.getProperty(bean, property);
+				return PropertyUtils.getProperty(bean, property);
 			}
-		} catch (InvocationTargetException ex) {
-			throw new RuntimeException("Exception getting property [" + property + "] on bean [" + bean + "]: " + ex, ex);
 		} catch (IllegalArgumentException ex) {
 			if (ex.getMessage().trim().indexOf("Null property value for") != -1) {
 				// Ignoring a null property
 				return null;
 			}
-			throw new IllegalArgumentException(
-					"Bean ou property nullo. [bean: " + bean + ", property: " + property + "]");
+			throw ex;
 		} catch (Exception ex) {
-			throw new IllegalArgumentException(errmsg, ex);
+			throw new IllegalArgumentException(ex.toString(), ex);
 		}
-		return ret;
 	}
 
 	/**
