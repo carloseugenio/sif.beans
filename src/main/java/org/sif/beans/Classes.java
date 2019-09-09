@@ -109,10 +109,8 @@ public class Classes {
 			}
 			throw new IllegalArgumentException(
 					"Bean ou property nullo. [bean: " + bean + ", property: " + property + "]");
-		} catch (NoSuchMethodException nsme) {
-			throw new IllegalArgumentException(errmsg, nsme);
-		} catch (IllegalAccessException iae) {
-			throw new IllegalArgumentException(errmsg, iae);
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(errmsg, ex);
 		}
 		return ret;
 	}

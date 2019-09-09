@@ -1,6 +1,7 @@
 package org.sif.beans;
 
 import org.junit.Test;
+import org.sif.beans.converters.IgnoreConversionException;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -153,9 +154,8 @@ public class PropertyValueConverterUtilTest {
 		assertTrue(converterUtil.valueListToCollection(null, List.class, Integer.class).isEmpty());
 	}
 
-	@Test
+	@Test(expected = IgnoreConversionException.class)
 	public void convertEmptyValue() {
-		Object converted = converterUtil.convert(Employee.class, "id", "");
-		assertNotNull(converted);
+		converterUtil.convert(Employee.class, "id", "");
 	}
 }

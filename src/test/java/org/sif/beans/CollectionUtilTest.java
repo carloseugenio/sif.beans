@@ -140,6 +140,15 @@ public class CollectionUtilTest {
 		// Custom implementations
 		assertEquals(ArrayList.class, collectionUtil.newCollection(TestList.class).getClass());
 	}
+
+	@Test
+	public void isCollection() {
+		assertTrue(collectionUtil.isCollection(stringArrayCollection));
+		assertTrue(collectionUtil.isCollection(stringNumberArrayCollection));
+		assertTrue(collectionUtil.isCollection(listArrayCollection));
+		assertFalse(collectionUtil.isCollection(commaSeparatedList));
+		assertTrue(collectionUtil.isCollection("1,2"));
+	}
 }
 
 class TestList extends AbstractList {

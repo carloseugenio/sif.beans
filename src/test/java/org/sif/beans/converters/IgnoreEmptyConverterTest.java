@@ -11,6 +11,6 @@ public class IgnoreEmptyConverterTest {
 	public void testIgnoreEmptyToLong() {
 		IgnoreEmptyConverter converter = new IgnoreEmptyConverter(new LongConverter());
 		assertEquals(new Long(1L), converter.convert(Long.class, 1L));
-		assertEquals(null, converter.convert(Long.class, ""));
 	}
+
 }

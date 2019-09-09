@@ -137,7 +137,7 @@ public class CollectionUtil<T> {
 
 	/**
 	 * Returns true if this value is a collection. It will evaluate to true collections, arrays and even comma separated
-	 * values.
+	 * values. If it is a comma separated values, it must conform to {@link #isStringCommaSeparatedNumberArray(Object)}.
 	 */
 	public boolean isCollection(Object value) {
 		return value != null && (this.isRawCollection(value) || this.isArrayCollection(value) || this

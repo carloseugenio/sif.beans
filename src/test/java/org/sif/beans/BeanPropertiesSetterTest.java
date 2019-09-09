@@ -4,7 +4,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import static org.junit.Assert.*;
@@ -19,6 +18,7 @@ public class BeanPropertiesSetterTest {
 		factory.setSimplePropertySetter(new SimplePropertySetter());
 		setter.setFactory(factory);
 	}
+
 	@Test
 	public void setAllProperties() {
 		Employee bean = new Employee();
@@ -28,6 +28,16 @@ public class BeanPropertiesSetterTest {
 		setter.setAllProperties(bean, properties);
 		assertEquals(bean.getName(), "Test");
 		assertEquals(bean.getId(), new Long(1L));
+	}
+
+	@Test
+	public void setAllPropertiesWithDissociate() {
+		Employee bean = new Employee();
+		bean.setDepartment(new Department());
+		HashMap<String, Object> properties = new HashMap<>();
+		properties.put(BeanPropertiesSetter.DISSOCIATE_PREFIX + "department", null);
+		setter.setAllProperties(bean, properties);
+		assertEquals(null, bean.getDepartment());
 	}
 
 	@Test
@@ -51,6 +61,12 @@ class SimplePropertySetter implements PropertySetter {
 
 	@Override
 	public Object unsetProperty(Object bean, String property, Object value) {
-		return null;
+		try {
+			PropertyUtils.setProperty(bean, property, value);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bean;
+
 	}
 }
