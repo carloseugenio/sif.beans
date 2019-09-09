@@ -23,7 +23,7 @@ public class IgnoreEmptyConverter implements Converter {
 			if (value != null && value.toString().length() > 0) {
 				throw ex;
 			}
-			log.debug("Conversion threw exception for empty string: " + ex + ". Throw Ignore conversion exception...");
+			log.debug("Conversion threw exception for empty string: {}. Throw Ignore conversion exception...", ex);
 			throw new IgnoreConversionException();
 		}
 	}

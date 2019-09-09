@@ -10,8 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("unchecked")
 public class PropertyValueConverterUtilTest {
@@ -152,5 +151,11 @@ public class PropertyValueConverterUtilTest {
 	@Test
 	public void convertNullToEmptyList() {
 		assertTrue(converterUtil.valueListToCollection(null, List.class, Integer.class).isEmpty());
+	}
+
+	@Test
+	public void convertEmptyValue() {
+		Object converted = converterUtil.convert(Employee.class, "id", "");
+		assertNotNull(converted);
 	}
 }
