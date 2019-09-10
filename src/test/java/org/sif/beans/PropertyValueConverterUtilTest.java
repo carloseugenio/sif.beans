@@ -138,6 +138,16 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test(expected=IllegalArgumentException.class)
+	public void convertNullClass() {
+		converterUtil.convert(null, "1");
+	}
+
+	@Test
+	public void convertNullValue() {
+		assertNull(converterUtil.convert(List.class, null));
+	}
+
+	@Test(expected=IllegalArgumentException.class)
 	public void convertCollectionToList() {
 		converterUtil.convert(List.class, "1");
 	}
