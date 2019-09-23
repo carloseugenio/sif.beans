@@ -242,6 +242,11 @@ public class PropertyValueConverterUtil<T> {
 		log.debug("Converting {} to [{}]", debug(value), clazz);
 		Converter converter = ConvertUtils.lookup(clazz);
 		log.debug("Converter found: {}", converter);
+		if (converter == null) {
+			// Do not throw NPE. Log and return null
+			log.error("No converter found for class {}", clazz);
+			return null;
+		}
 		convertedValue = converter.convert(clazz, value);
 		log.debug("Converted value: {}", debug(convertedValue));
 		if (convertedValue != null) {
@@ -279,6 +284,13 @@ public class PropertyValueConverterUtil<T> {
 			Collection asList = asList(value);
 			log.debug("Created list from the array: {}", asList);
 			elements.addAll(convertAll(elementType, asList));
+		} else if (Object.class.equals(elementType)) {
+			log.debug("Trying to convert to an Object.class. Transforming to the real class");
+			elementType = value.getClass();
+			log.debug("New element type: {}", elementType);
+			Object converted = convert(elementType, value);
+			log.debug("Converted: {}", converted);
+			elements.add(converted);
 		} else if (collectionUtil.isStringCommaSeparatedArray(value)) {
 			log.debug("This is a String Comma Separated Array: {}", value);
 			Collection stringArrayAsTypeCollection = stringArrayToCollection(

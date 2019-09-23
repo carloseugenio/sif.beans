@@ -4,12 +4,7 @@ import org.junit.Test;
 import org.sif.beans.converters.IgnoreConversionException;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -99,6 +94,15 @@ public class PropertyValueConverterUtilTest {
 	}
 
 	@Test
+	public void convertEntityValueToEmptyList() {
+		Employee value = new Employee();
+		List<Employee> expected = new ArrayList<>();
+		expected.add(value);
+		Collection<?> result = converterUtil.valueListToCollection(value, List.class, Object.class);
+		assertEquals(expected.size(), result.size());
+	}
+
+	@Test
 	public void convertStringValueToInteger() {
 		Integer expected = 1;
 		String value = "1";
@@ -174,8 +178,10 @@ public class PropertyValueConverterUtilTest {
 		converterUtil.convert(Employee.class, "other", "");
 	}
 
+	@Test
 	public void testConvertEntity() {
 		Employee entity = new Employee();
-		
+		Object value = converterUtil.convert(Object.class, entity);
+		assertNull(value);
 	}
 }
