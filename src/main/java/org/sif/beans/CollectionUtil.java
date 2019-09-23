@@ -104,6 +104,9 @@ public class CollectionUtil<T> {
 	 * Returns whether the provided value is a String representing a comma separated values of Number elements.
 	 */
 	public boolean isStringCommaSeparatedNumberArray(Object value) {
+		if (value == null) {
+			return false;
+		}
 		String[] splitArray = StringUtils.split(String.valueOf(value), ',');
 		if (isEmptyOrOneElementArray(splitArray)) {
 			return false;

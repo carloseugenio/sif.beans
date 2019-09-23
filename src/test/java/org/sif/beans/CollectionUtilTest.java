@@ -57,6 +57,26 @@ public class CollectionUtilTest {
 		assertTrue(collectionUtil.asList(null).isEmpty());
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void getNullFifrstElementCollection() {
+		collectionUtil.getFirstCollectionElement(null, Integer.class);
+	}
+
+	@Test
+	public void testIsStringCommaSeparatedNull() {
+		assertFalse(collectionUtil.isStringCommaSeparatedNumberArray(null));
+	}
+
+	@Test
+	public void testIsStringCommaSeparatedEmpty() {
+		assertFalse(collectionUtil.isStringCommaSeparatedNumberArray(""));
+	}
+
+	@Test
+	public void testNullIsEmpty() {
+		assertTrue(collectionUtil.isEmpty(null));
+	}
+
 	@Test
 	public void toListEmptyString() {
 		assertEquals(1, collectionUtil.asList("").size());
