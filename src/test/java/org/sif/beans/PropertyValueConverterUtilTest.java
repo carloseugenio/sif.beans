@@ -173,4 +173,9 @@ public class PropertyValueConverterUtilTest {
 	public void convertNonExistingField() {
 		converterUtil.convert(Employee.class, "other", "");
 	}
+
+	public void testConvertEntity() {
+		Employee entity = new Employee();
+		
+	}
 }
