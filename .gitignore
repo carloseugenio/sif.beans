@@ -17,4 +17,4 @@ hsql:..script
 .classpath
 .settings
 out/
-
+.project
